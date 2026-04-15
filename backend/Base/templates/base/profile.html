@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil - AutoLocation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap-custom.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark gradient-bg sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                <i class="fas fa-car"></i> AutoLocation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">{{ user.username }}</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-warning text-dark fw-bold ms-2" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Déconnexion
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- Profile Card -->
+                    <div class="card shadow-sm border-0 rounded-3 mb-4">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-3 text-center">
+                                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 120px; height: 120px; font-size: 3rem;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <h1 class="card-title mb-1">{{ user.get_full_name|default:user.username }}</h1>
+                                    <p class="text-muted mb-3">
+                                        <i class="fas fa-envelope"></i> {{ user.email|default:"Email non renseigné" }}
+                                    </p>
+                                    <p class="text-success mb-0">
+                                        <i class="fas fa-check-circle"></i> Compte actif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Information -->
+                    <div class="card shadow-sm border-0 rounded-3 mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-user-circle"></i> Informations personnelles</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Nom d'utilisateur</label>
+                                    <p class="fw-bold">{{ user.username }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Email</label>
+                                    <p class="fw-bold">{{ user.email|default:"Non renseigné" }}</p>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Prénom</label>
+                                    <p class="fw-bold">{{ user.first_name|default:"Non renseigné" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Nom</label>
+                                    <p class="fw-bold">{{ user.last_name|default:"Non renseigné" }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Compte créé le</label>
+                                    <p class="fw-bold">{{ user.date_joined|date:"d/m/Y H:i" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted">Dernière connexion</label>
+                                    <p class="fw-bold">{{ user.last_login|date:"d/m/Y H:i"|default:"Première connexion" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    {% if user.is_superuser %}
+                    <div class="card shadow-sm border-0 rounded-3 mb-4 bg-light">
+                        <div class="card-body">
+                            <p class="mb-0">
+                                <i class="fas fa-crown text-warning"></i>
+                                <strong>Vous êtes superadministrateur.</strong> Accédez au <a href="/admin">panel d'administration</a>.
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <a href="{% url 'home' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-home"></i> Retour à l'accueil
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-danger">
+                            <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-5">
+        <div class="container text-center">
+            <p>&copy; 2026 AutoLocation. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

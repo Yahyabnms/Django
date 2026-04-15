@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Location de Voitures</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap-custom.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark gradient-bg sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="fas fa-car"></i> AutoLocation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#accueil">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#fleet">Flotte</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item">
+                        <button id="toggleTheme" class="btn btn-sm btn-light ms-2" title="Basculer le mode sombre/clair">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Mon profil</a></li>
+                                {% if user.is_superuser %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="/admin"><i class="fas fa-cog"></i> Administration</a></li>
+                                {% endif %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Déconnexion</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">S'inscrire</a></li>
+                        <li class="nav-item"><a class="nav-link btn btn-warning text-dark fw-bold ms-2" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="hero gradient-bg text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-3 fw-bold mb-3">Bienvenue sur AutoLocation</h1>
+            <p class="lead mb-4">Votre solution de gestion de locations de voitures</p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="#services" class="btn btn-primary btn-lg">Découvrir plus</a>
+                <a href="#fleet" class="btn btn-light btn-lg text-primary">Voir nos voitures</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats py-5 bg-light">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card border-0 shadow-sm text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-car fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Flotte Complète</h5>
+                            <p class="card-text">250+ voitures disponibles</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card border-0 shadow-sm text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Clients Satisfaits</h5>
+                            <p class="card-text">5000+ clients</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card border-0 shadow-sm text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Localités</h5>
+                            <p class="card-text">20+ agences</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card border-0 shadow-sm text-center h-100">
+                        <div class="card-body">
+                            <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">100% Sécurisé</h5>
+                            <p class="card-text">Toutes les locations assurées</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold">Nos Services</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-calendar fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Réservation Simple</h5>
+                            <p class="card-text">Réservez votre voiture en quelques clics</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-credit-card fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Paiement Sécurisé</h5>
+                            <p class="card-text">Multiples options de paiement disponibles</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-headset fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Support 24/7</h5>
+                            <p class="card-text">Notre équipe est toujours à votre service</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-file-contract fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Contrats Clairs</h5>
+                            <p class="card-text">Termes et conditions transparents</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-road fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Livraison Gratuite</h5>
+                            <p class="card-text">Livraison à votre lieu de choix</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card service-card h-100 border-0 shadow-sm">
+                        <div class="card-body text-center">
+                            <i class="fas fa-check-circle fa-2x text-warning mb-3"></i>
+                            <h5 class="card-title">Assurance Complète</h5>
+                            <p class="card-text">Couverture complète pour votre sécurité</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fleet Section -->
+    <section id="fleet" class="fleet py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-2">Notre Flotte</h2>
+            <p class="text-center text-muted mb-5">Découvrez nos catégories de véhicules</p>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-compact-disc fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Économique</h5>
+                            <p class="card-text mb-3">Parfait pour les trajets urbains</p>
+                            <a href="#" class="btn btn-sm btn-primary">En savoir plus</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-van fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Moyen Format</h5>
+                            <p class="card-text mb-3">Confortable pour les familles</p>
+                            <a href="#" class="btn btn-sm btn-primary">En savoir plus</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-truck fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">SUV</h5>
+                            <p class="card-text mb-3">Luxe et performance</p>
+                            <a href="#" class="btn btn-sm btn-primary">En savoir plus</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card category-card h-100 border-0 shadow-sm text-center">
+                        <div class="card-body">
+                            <i class="fas fa-crown fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Premium</h5>
+                            <p class="card-text mb-3">Le summum du confort</p>
+                            <a href="#" class="btn btn-sm btn-primary">En savoir plus</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta gradient-bg text-white py-5 text-center">
+        <div class="container">
+            <h2 class="display-5 fw-bold mb-3">Prêt à réserver?</h2>
+            <p class="lead mb-4">Commencez votre location dès aujourd'hui</p>
+            {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="btn btn-light btn-lg">Mon compte</a>
+            {% else %}
+                <a href="{% url 'signup' %}" class="btn btn-light btn-lg">S'inscrire maintenant</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-white py-5">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <h5>AutoLocation</h5>
+                    <p>Votre partenaire pour les locations de voitures</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liens Rapides</h5>
+                    <ul class="list-unstyled">
+                        {% if user.is_superuser %}
+                            <li><a href="/admin" class="text-white-50 text-decoration-none">Administration</a></li>
+                        {% endif %}
+                        <li><a href="#services" class="text-white-50 text-decoration-none">Services</a></li>
+                        <li><a href="#fleet" class="text-white-50 text-decoration-none">Flotte</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p class="text-white-50">Email: location-voiture@gmail.com</p>
+                    <p class="text-white-50">Tel: +212 6 51 18 19 20</p>
+                </div>
+            </div>
+            <hr class="bg-white-50">
+            <div class="text-center text-white-50">
+                <p>&copy; 2026 AutoLocation. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

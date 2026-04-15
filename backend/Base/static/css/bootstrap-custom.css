@@ -1,0 +1,565 @@
+/* ============================================
+   VARIABLES
+   ============================================ */
+
+:root {
+    --primary-color: #FCD34D;
+    --secondary-color: #F59E0B;
+    --accent-color: #FBBF24;
+    --dark-color: #1f2937;
+    --light-color: #f9fafb;
+    --text-color: #374151;
+    --border-color: #e5e7eb;
+    --success-color: #10b981;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   STYLES GÉNÉRAUX
+   ============================================ */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+    background: linear-gradient(135deg, #FCD34D 0%, #F59E0B 100%);
+}
+
+/* ============================================
+   FORMULAIRES
+   ============================================ */
+
+.form-control {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 12px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(252, 211, 77, 0.2);
+}
+
+.form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.form-control.is-invalid:focus {
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.1);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--dark-color);
+    margin-bottom: 8px;
+}
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+
+.navbar {
+    box-shadow: var(--shadow);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-brand i {
+    margin-right: 0.5rem;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: underline;
+}
+
+.navbar-dark .navbar-nav .dropdown-menu {
+    background-color: var(--dark-color);
+    border: none;
+}
+
+.navbar-dark .navbar-nav .dropdown-menu .dropdown-item {
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.navbar-dark .navbar-nav .dropdown-menu .dropdown-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.hero {
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+}
+
+.hero h1 {
+    animation: slideInDown 0.8s ease;
+}
+
+.hero p {
+    animation: slideInUp 0.8s ease 0.2s both;
+}
+
+.hero .d-flex {
+    animation: slideInUp 0.8s ease 0.4s both;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ============================================
+   BOUTONS
+   ============================================ */
+
+.btn {
+    border-radius: 5px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-warning {
+    background-color: var(--accent-color) !important;
+    border-color: var(--accent-color) !important;
+    color: var(--dark-color) !important;
+    font-weight: 600;
+}
+
+.btn-warning:hover {
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
+    transform: translateY(-2px);
+}
+
+.btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-success:hover {
+    background-color: #059669;
+    border-color: #059669;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-outline-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* ============================================
+   SECTION STATISTIQUES
+   ============================================ */
+
+.stats {
+    margin-top: -50px;
+    position: relative;
+    z-index: 10;
+}
+
+.stat-card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.stat-card i {
+    color: var(--primary-color);
+}
+
+/* ============================================
+   SECTION SERVICES
+   ============================================ */
+
+.services {
+    background-color: white;
+}
+
+.service-card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    border-color: var(--primary-color) !important;
+    box-shadow: var(--shadow-lg) !important;
+    transform: translateY(-5px);
+}
+
+.service-card i {
+    color: var(--accent-color);
+    transition: all 0.3s ease;
+}
+
+.service-card:hover i {
+    animation: bounce 0.5s ease;
+}
+
+/* ============================================
+   SECTION FLOTTE
+   ============================================ */
+
+.fleet {
+    background-color: var(--light-color);
+}
+
+.category-card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.category-card i {
+    color: var(--primary-color);
+}
+
+.category-card a {
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.category-card a:hover {
+    color: var(--secondary-color);
+}
+
+/* ============================================
+   SECTION CTA
+   ============================================ */
+
+.cta {
+    text-align: center;
+}
+
+.cta h2 {
+    font-weight: bold;
+}
+
+.cta p {
+    opacity: 0.95;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+
+.footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer h5 {
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+.footer a {
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--accent-color) !important;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.text-white-50:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.shadow-sm {
+    box-shadow: var(--shadow) !important;
+}
+
+.shadow {
+    box-shadow: var(--shadow-lg) !important;
+}
+
+.card {
+    border: 1px solid var(--border-color);
+}
+
+.card-header {
+    background-color: var(--primary-color) !important;
+    border-bottom: none;
+}
+
+.card-header h5 {
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .stat-card,
+    .service-card,
+    .category-card {
+        margin-bottom: 1rem;
+    }
+
+    .hero {
+        min-height: 350px;
+        padding: 40px 0;
+    }
+
+    .stats {
+        margin-top: -30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+
+    .hero p {
+        font-size: 0.9rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .hero {
+        min-height: 300px;
+        padding: 30px 0;
+    }
+}
+
+/* ============================================
+   DARK MODE
+   ============================================ */
+
+body.dark-mode {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .card {
+    background-color: #2a2a2a !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .services {
+    background-color: #1a1a1a !important;
+}
+
+body.dark-mode .stats {
+    background-color: #252525 !important;
+}
+
+body.dark-mode .fleet {
+    background-color: #1a1a1a !important;
+}
+
+body.dark-mode .stat-card,
+body.dark-mode .service-card,
+body.dark-mode .category-card {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .form-control {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .form-control:focus {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0 !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(252, 211, 77, 0.3) !important;
+}
+
+body.dark-mode .form-label {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .dropdown-menu {
+    background-color: #2a2a2a !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .dropdown-item {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .text-dark {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .text-muted {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .text-white-50 {
+    color: #a0a0a0 !important;
+}
+
+body.dark-mode .footer {
+    background-color: #1a1a1a !important;
+    border-top-color: #444 !important;
+}
+
+body.dark-mode .badge {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode table {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #2a2a2a !important;
+}
+
+body.dark-mode .navbar-dark {
+    background-color: #1a1a1a !important;
+}
+
+body.dark-mode .btn-light {
+    background-color: #3a3a3a !important;
+    color: #e0e0e0 !important;
+    border-color: #555 !important;
+}
+
+body.dark-mode .btn-light:hover {
+    background-color: #4a4a4a !important;
+    color: #ffffff !important;
+}
