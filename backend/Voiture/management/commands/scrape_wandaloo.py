@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from scrapers.simple_scraper import SimpleWandalooScraper
+import requests
+from Voiture.models import Voiture, CategorieVoiture
 
 
 class Command(BaseCommand):

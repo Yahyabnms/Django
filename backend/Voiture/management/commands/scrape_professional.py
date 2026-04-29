@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand
-from scrapers.professional_scraper import ProfessionalScraper
+import requests
 import time
 import os
+from bs4 import BeautifulSoup
+from Voiture.models import Voiture, CategorieVoiture
 
 class Command(BaseCommand):
     help = 'Scraping professionnel avec ScrapingBee pour données automobiles fiables'
