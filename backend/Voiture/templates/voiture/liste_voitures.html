@@ -1,0 +1,205 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Nos Voitures{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cars-page {
+        background: linear-gradient(180deg, #fffdf5 0%, #ffffff 35%, #fffdf5 100%);
+        min-height: 100vh;
+        padding-bottom: 2rem;
+    }
+
+    .car-card {
+        border-radius: 18px;
+        overflow: hidden;
+        border: 1px solid #f6e7ad;
+        box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        background: white;
+        height: 100%;
+    }
+
+    .car-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.14);
+    }
+
+    .car-image {
+        height: 220px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .car-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        border: 1px solid transparent;
+    }
+
+    .badge-available {
+        background: #ecfdf3;
+        color: #166534;
+        border-color: #bbf7d0;
+    }
+
+    .badge-unavailable {
+        background: #fef2f2;
+        color: #991b1b;
+        border-color: #fecaca;
+    }
+
+    .car-info {
+        padding: 1.5rem;
+    }
+
+    .car-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 0.35rem;
+    }
+
+    .car-price {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #b8860b;
+        margin-bottom: 0.9rem;
+    }
+
+    .car-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-bottom: 0.85rem;
+    }
+
+    .feature-tag {
+        background: #fff7d6;
+        border: 1px solid #f6e7ad;
+        padding: 0.28rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        color: #8b6508;
+        font-weight: 600;
+    }
+
+    .btn-reserve {
+        padding: 0.7rem 1rem;
+        font-weight: 600;
+        border-radius: 12px;
+        width: 100%;
+        letter-spacing: 0.01em;
+        transition: all 0.25s ease;
+    }
+
+    .btn-reserve:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(212, 160, 23, 0.25);
+    }
+
+    .btn-reserve:disabled {
+        background: #e5e7eb;
+        border-color: #e5e7eb;
+        color: #6b7280;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #f4c430 0%, #ffcf40 45%, #d4a017 100%);
+        color: #111827;
+        padding: 2.8rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 30px 30px;
+    }
+
+    .page-header .lead {
+        color: rgba(17, 24, 39, 0.85);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cars-page">
+<div class="page-header">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3">
+            <i class="fas fa-car mr-3"></i>Notre Flotte
+        </h1>
+        <p class="lead mb-0">Découvrez nos véhicules disponibles et réservez en quelques clics</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4 align-items-stretch">
+        {% for voiture in voitures %}
+        <div class="col-md-6 col-lg-4">
+            <div class="car-card d-flex flex-column h-100">
+                <div class="position-relative">
+                    {% if voiture.image %}
+                        <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+                    {% else %}
+                        <div class="car-image d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-car fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <span class="car-badge {% if voiture.statut == 'disponible' %}badge-available{% else %}badge-unavailable{% endif %}">
+                        <i class="fas fa-circle mr-1"></i>{{ voiture.get_statut_display }}
+                    </span>
+                </div>
+                
+                <div class="car-info flex-grow-1">
+                    <h3 class="car-title">{{ voiture.marque }} {{ voiture.modele }}</h3>
+                    <p class="car-price">
+                        <i class="fas fa-tag mr-2"></i>{{ voiture.prix_par_jour }} DH / jour
+                    </p>
+                    
+                    <div class="car-features">
+                        <span class="feature-tag">
+                            <i class="fas fa-calendar-alt mr-1"></i>{{ voiture.annee }}
+                        </span>
+                        <span class="feature-tag">
+                            <i class="fas fa-gas-pump mr-1"></i>{{ voiture.categorie.type_carburant|default:"N/A" }}
+                        </span>
+                        <span class="feature-tag">
+                            <i class="fas fa-cog mr-1"></i>{{ voiture.categorie.transmission|default:"N/A" }}
+                        </span>
+                    </div>
+                    
+                    <p class="text-muted small mb-3">
+                        <i class="fas fa-tachometer-alt mr-1"></i>{{ voiture.kilométrage }} km
+                    </p>
+                </div>
+                
+                <div class="car-info pt-0">
+                    {% if voiture.statut == 'disponible' %}
+                        <a href="/reservation/reserver/{{ voiture.id }}/" class="btn btn-primary btn-reserve">
+                            <i class="fas fa-calendar-check mr-2"></i>Réserver maintenant
+                        </a>
+                    {% else %}
+                        <button type="button" class="btn btn-secondary btn-reserve" disabled>
+                            <i class="fas fa-ban mr-2"></i>Indisponible
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle mr-2"></i>
+                Aucune voiture disponible pour le moment.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+ </div>
+{% endblock %}

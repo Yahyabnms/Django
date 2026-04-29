@@ -1,0 +1,40 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+.Python
+.pytest_cache/
+.mypy_cache/
+
+venv/
+.venv/
+env/
+
+*.sqlite3
+db.sqlite3
+
+# Django
+*.log
+/local_settings.py
+/static/
+/media/
+*.pot
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test files
+test_*.py
+test_clean_*.py
+test_complete_*.py
+test_final_*.py
+test_url_*.py

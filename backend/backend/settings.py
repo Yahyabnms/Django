@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-*qf9aujcwrz8d(#mkbu-dyomvmih_5#=gfkg45c#yg2e1yn@g_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 
 
 # Application definition
@@ -89,8 +89,22 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+        },
+        'CONN_MAX_AGE': 600,
     }
 }
+
+# Désactiver la vérification de version MariaDB
+from django.db.backends.mysql.base import DatabaseWrapper
+DatabaseWrapper.check_database_version_supported = lambda self: None
+
+# Configuration de l'authentification
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Password validation

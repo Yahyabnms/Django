@@ -1,0 +1,631 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Réserver une Voiture{% endblock %}
+
+{% block extra_css %}
+<style>
+    .reservation-card {
+        max-width: 800px;
+        margin: 2rem auto;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .car-image-container {
+        position: relative;
+        height: 300px;
+        overflow: hidden;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .car-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .car-image:hover {
+        transform: scale(1.05);
+    }
+
+    .car-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .badge-available {
+        background: rgba(40, 167, 69, 0.9);
+        color: white;
+    }
+
+    .badge-unavailable {
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+    }
+
+    .car-info {
+        padding: 2rem;
+        background: white;
+    }
+
+    .car-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 0.5rem;
+    }
+
+    .car-price {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .car-specs {
+        color: #333;
+        font-size: 1.1rem;
+        line-height: 2;
+    }
+
+    .car-specs strong {
+        color: #1a1a2e;
+        font-weight: 600;
+    }
+
+    .form-section {
+        padding: 2rem;
+        background: #ffffff;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .days-display {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        margin: 1rem 0;
+        font-weight: 600;
+    }
+
+    .price-display {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        margin: 1rem 0;
+        font-weight: 700;
+        font-size: 1.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.02);
+        }
+    }
+
+    .availability-status {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        font-weight: 600;
+        text-align: center;
+        display: none;
+    }
+
+    .status-available {
+        background: rgba(40, 167, 69, 0.1);
+        color: #28a745;
+        border: 2px solid #28a745;
+    }
+
+    .status-unavailable {
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        border: 2px solid #dc3545;
+    }
+
+    .btn-confirm {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-confirm:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .alert-custom {
+        border-radius: 10px;
+        margin-top: 1rem;
+        display: none;
+    }
+
+    .calendar-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #667eea;
+    }
+
+    .date-input-wrapper {
+        position: relative;
+    }
+
+    .feature-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+    }
+
+    /* Mode sombre */
+    @media (prefers-color-scheme: dark) {
+        body {
+            background: linear-gradient(135deg, #2d2d44 0%, #3d3d5c 100%);
+        }
+
+        .car-info {
+            background: #3d3d5c;
+        }
+
+        .car-title {
+            color: #ffffff;
+        }
+
+        .car-specs {
+            color: #ffffff;
+            font-size: 1.2rem;
+        }
+
+        .car-specs strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .form-section {
+            background: #3d3d5c;
+            border-top-color: #555;
+        }
+
+        .form-label {
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .form-control {
+            background: #4a4a6a;
+            border-color: #666;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            background: #4a4a6a;
+        }
+
+        .navbar {
+            background: rgba(61, 61, 92, 0.95);
+        }
+
+        .nav-link {
+            color: #ffffff !important;
+        }
+
+        .nav-link:hover {
+            color: #667eea !important;
+        }
+    }
+
+    /* Classe pour le mode sombre manuel */
+    .dark-mode {
+        background: linear-gradient(135deg, #2d2d44 0%, #3d3d5c 100%) !important;
+    }
+
+    .dark-mode .car-info {
+        background: #3d3d5c !important;
+    }
+
+    .dark-mode .car-title {
+        color: #ffffff !important;
+    }
+
+    .dark-mode .car-specs {
+        color: #ffffff !important;
+        font-size: 1.2rem !important;
+    }
+
+    .dark-mode .car-specs strong {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+
+    .dark-mode .form-section {
+        background: #3d3d5c !important;
+        border-top-color: #555 !important;
+    }
+
+    .dark-mode .form-label {
+        color: #ffffff !important;
+        font-size: 1.1rem !important;
+    }
+
+    .dark-mode .form-control {
+        background: #4a4a6a !important;
+        border-color: #666 !important;
+        color: #ffffff !important;
+        font-size: 1rem !important;
+    }
+
+    .dark-mode .form-control:focus {
+        border-color: #667eea !important;
+        background: #4a4a6a !important;
+    }
+
+    .dark-mode .navbar {
+        background: rgba(61, 61, 92, 0.95) !important;
+    }
+
+    .dark-mode .nav-link {
+        color: #ffffff !important;
+    }
+
+    .dark-mode .nav-link:hover {
+        color: #667eea !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="reservation-card">
+        <!-- Section Voiture -->
+        <div class="car-image-container">
+            {% if voiture.image %}
+                <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+            {% else %}
+                <div class="car-image d-flex align-items-center justify-content-center">
+                    <div class="text-white text-center">
+                        <i class="fas fa-car fa-4x mb-3"></i>
+                        <p class="h4">Image non disponible</p>
+                    </div>
+                </div>
+            {% endif %}
+            <span class="car-badge {% if voiture.statut == 'disponible' %}badge-available{% else %}badge-unavailable{% endif %}">
+                <i class="fas fa-circle mr-2"></i>{{ voiture.get_statut_display }}
+            </span>
+        </div>
+
+        <div class="car-info">
+            <h1 class="car-title">{{ voiture.marque }} {{ voiture.modele }}</h1>
+            <p class="car-price">
+                <i class="fas fa-tag feature-icon"></i>{{ voiture.prix_par_jour }} DH / jour
+            </p>
+            <div class="car-specs">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="mb-1">
+                            <i class="fas fa-calendar-alt feature-icon"></i>
+                            <strong>Année:</strong> {{ voiture.annee }}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-1">
+                            <i class="fas fa-gas-pump feature-icon"></i>
+                            <strong>Carburant:</strong> {{ voiture.categorie.type_carburant|default:"N/A" }}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="mb-1">
+                            <i class="fas fa-cog feature-icon"></i>
+                            <strong>Transmission:</strong> {{ voiture.categorie.transmission|default:"N/A" }}
+                        </p>
+                    </div>
+                </div>
+                <p class="mb-0">
+                    <i class="fas fa-tachometer-alt feature-icon"></i>
+                    <strong>Kilométrage:</strong> {{ voiture.kilométrage }} km
+                </p>
+            </div>
+        </div>
+
+        <!-- Formulaire de Réservation -->
+        <div class="form-section">
+            <h3 class="mb-4">
+                <i class="fas fa-calendar-check mr-2"></i>Réserver cette voiture
+            </h3>
+
+            <form id="reservationForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="voiture_id" value="{{ voiture.id }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="date_debut" class="form-label">
+                                <i class="fas fa-calendar-alt mr-2"></i>Date de début
+                            </label>
+                            <div class="date-input-wrapper">
+                                <input type="date" class="form-control" id="date_debut" name="date_debut" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="date_fin" class="form-label">
+                                <i class="fas fa-calendar-alt mr-2"></i>Date de fin
+                            </label>
+                            <div class="date-input-wrapper">
+                                <input type="date" class="form-control" id="date_fin" name="date_fin" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group mb-3">
+                            <label for="telephone" class="form-label">
+                                <i class="fas fa-phone mr-2"></i>Numéro de téléphone
+                            </label>
+                            <input type="tel" class="form-control" id="telephone" name="telephone" 
+                                   placeholder="0612345678" required>
+                            <small class="form-text text-muted">
+                                Votre numéro de téléphone pour la confirmation et la livraison
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="days-display" id="daysDisplay" style="display: none;">
+                    <i class="fas fa-clock mr-2"></i>
+                    Durée: <span id="numberOfDays">0</span> jour(s)
+                </div>
+
+                <div class="price-display" id="priceDisplay" style="display: none;">
+                    <i class="fas fa-money-bill-wave mr-2"></i>
+                    Prix total: <span id="totalPrice">0</span> DH
+                </div>
+
+                <div class="availability-status" id="availabilityStatus"></div>
+
+                <div class="alert alert-success alert-custom" id="successAlert">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Réservation envoyée, en attente de validation
+                </div>
+
+                <div class="alert alert-danger alert-custom" id="errorAlert">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="errorMessage"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-confirm" id="confirmBtn" disabled>
+                    <i class="fas fa-check mr-2"></i>Confirmer la réservation
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion du mode sombre/clair
+        const toggleThemeBtn = document.getElementById('toggleTheme');
+        if (toggleThemeBtn) {
+            toggleThemeBtn.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+                }
+            });
+        }
+
+        // Vérifier le mode préféré du système
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark-mode');
+            const toggleThemeBtn = document.getElementById('toggleTheme');
+            if (toggleThemeBtn) {
+                const icon = toggleThemeBtn.querySelector('i');
+                if (icon) {
+                    icon.className = 'fas fa-sun';
+                }
+            }
+        }
+
+        const dateDebut = document.getElementById('date_debut');
+        const dateFin = document.getElementById('date_fin');
+        const daysDisplay = document.getElementById('daysDisplay');
+        const numberOfDays = document.getElementById('numberOfDays');
+        const priceDisplay = document.getElementById('priceDisplay');
+        const totalPrice = document.getElementById('totalPrice');
+        const availabilityStatus = document.getElementById('availabilityStatus');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        const prixParJour = {{ voiture.prix_par_jour }};
+        const voitureId = {{ voiture.id }};
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateDebut.setAttribute('min', today);
+        dateFin.setAttribute('min', today);
+
+        function calculatePrice() {
+            const debut = new Date(dateDebut.value);
+            const fin = new Date(dateFin.value);
+
+            if (dateDebut.value && dateFin.value) {
+                if (fin <= debut) {
+                    showError('La date de fin doit être après la date de début');
+                    daysDisplay.style.display = 'none';
+                    priceDisplay.style.display = 'none';
+                    availabilityStatus.style.display = 'none';
+                    confirmBtn.disabled = true;
+                    return;
+                }
+
+                const diffTime = Math.abs(fin - debut);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                numberOfDays.textContent = diffDays;
+                totalPrice.textContent = (diffDays * prixParJour).toFixed(2);
+                
+                daysDisplay.style.display = 'block';
+                priceDisplay.style.display = 'block';
+                
+                // Check availability
+                checkAvailability(dateDebut.value, dateFin.value);
+            } else {
+                daysDisplay.style.display = 'none';
+                priceDisplay.style.display = 'none';
+                availabilityStatus.style.display = 'none';
+                confirmBtn.disabled = true;
+            }
+        }
+
+        async function checkAvailability(debut, fin) {
+            try {
+                const response = await fetch(`/reservation/api/check-availability/${voitureId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        date_debut: debut,
+                        date_fin: fin
+                    })
+                });
+
+                const data = await response.json();
+
+                availabilityStatus.style.display = 'block';
+                
+                if (data.available) {
+                    availabilityStatus.className = 'availability-status status-available';
+                    availabilityStatus.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Disponible pour ces dates';
+                    confirmBtn.disabled = false;
+                } else {
+                    availabilityStatus.className = 'availability-status status-unavailable';
+                    availabilityStatus.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Non disponible pour ces dates';
+                    confirmBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error checking availability:', error);
+                availabilityStatus.style.display = 'none';
+                confirmBtn.disabled = true;
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorAlert.style.display = 'block';
+            successAlert.style.display = 'none';
+        }
+
+        function showSuccess() {
+            successAlert.style.display = 'block';
+            errorAlert.style.display = 'none';
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        dateDebut.addEventListener('change', calculatePrice);
+        dateFin.addEventListener('change', calculatePrice);
+
+        // Form submission
+        document.getElementById('reservationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch('/reservation/api/create-reservation/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showSuccess();
+                    confirmBtn.disabled = true;
+                    setTimeout(() => {
+                        window.location.href = '/profile/';
+                    }, 2000);
+                } else {
+                    showError(data.message || 'Erreur lors de la réservation');
+                }
+            } catch (error) {
+                showError('Erreur de connexion. Veuillez réessayer.');
+            }
+        });
+    });
+</script>
+{% endblock %}

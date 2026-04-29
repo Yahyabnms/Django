@@ -38,6 +38,7 @@ class Voiture(models.Model):
     prix_par_jour = models.DecimalField(max_digits=10, decimal_places=2)
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='disponible')
     kilométrage = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='voitures/', null=True, blank=True)
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -55,7 +56,7 @@ class Voiture(models.Model):
                 f"Catégorie: {self.categorie}\n"
                 f"Immatriculation: {self.immatriculation}\n"
                 f"Année: {self.annee}\n"
-                f"Prix/jour: {self.prix_par_jour}€\n"
+                f"Prix/jour: {self.prix_par_jour}DH\n"
                 f"Kilométrage: {self.kilométrage} km\n"
                 f"Statut: {self.get_statut_display()}")
     

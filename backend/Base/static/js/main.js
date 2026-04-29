@@ -1,90 +1,9 @@
 // ============================================
-// INTERACTIONS JAVASCRIPT
+// DARK/LIGHT TOGGLE - VERSION SIMPLIFIÉE
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
-    // Navbar collapse on link click
-    const navbarLinks = document.querySelectorAll('.navbar-nav a:not(.btn-admin)');
-    const navbarCollapse = document.querySelector('.navbar-collapse');
-    
-    navbarLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (navbarCollapse.classList.contains('show')) {
-                navbarCollapse.classList.remove('show');
-            }
-        });
-    });
-
-    // Add animation classes on scroll
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -100px 0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-
-    // Observe cards for animation
-    document.querySelectorAll('.stat-card, .service-card, .category-card').forEach(card => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        observer.observe(card);
-    });
-
-    // Active navigation link on scroll
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.navbar-nav a[href^="#"]');
-
-    window.addEventListener('scroll', () => {
-        let current = '';
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            if (pageYOffset >= sectionTop - 200) {
-                current = section.getAttribute('id');
-            }
-        });
-
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href').slice(1) === current) {
-                link.classList.add('active');
-            }
-        });
-    });
-
-    // Add hover effects to buttons
-    document.querySelectorAll('.btn').forEach(btn => {
-        btn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-3px)';
-        });
-        btn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
-
-    // Dark Mode Toggle
+    // Dark mode toggle functionality
     const toggleThemeBtn = document.getElementById('toggleTheme');
     const darkModeKey = 'darkMode';
     
@@ -93,6 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('dark-mode');
         if (toggleThemeBtn) {
             toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            toggleThemeBtn.classList.add('is-dark');
+            toggleThemeBtn.setAttribute('aria-label', 'Passer en mode clair');
         }
     }
     
@@ -101,25 +22,112 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             
-            console.log('Toggle clicked');
-            document.body.classList.toggle('dark-mode');
-            console.log('Dark mode enabled:', document.body.classList.contains('dark-mode'));
+            // Toggle dark mode class
+            const isDarkMode = document.body.classList.toggle('dark-mode');
             
-            if (document.body.classList.contains('dark-mode')) {
+            // Add transition effect
+            document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+            
+            if (isDarkMode) {
+                // Switch to dark mode
                 toggleThemeBtn.innerHTML = '<i class="fas fa-sun"></i>';
+                toggleThemeBtn.classList.add('is-dark');
+                toggleThemeBtn.setAttribute('aria-label', 'Passer en mode clair');
                 localStorage.setItem(darkModeKey, 'enabled');
-                console.log('Switched to dark mode');
+                console.log('Mode sombre activé');
             } else {
+                // Switch to light mode
                 toggleThemeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+                toggleThemeBtn.classList.remove('is-dark');
+                toggleThemeBtn.setAttribute('aria-label', 'Passer en mode sombre');
                 localStorage.setItem(darkModeKey, 'disabled');
-                console.log('Switched to light mode');
+                console.log('Mode clair activé');
             }
+            
+            // Remove transition after animation
+            setTimeout(() => {
+                document.body.style.transition = '';
+            }, 300);
         });
     } else {
-        console.log('Toggle button not found!');
+        console.log('Bouton toggle non trouvé!');
     }
 
-    console.log('AutoLocation - Page loaded successfully!');
+    // Smooth scrolling for anchor links - keep welcome always visible
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                const welcomeSection = document.querySelector('#accueil');
+                const welcomeHeight = welcomeSection.offsetHeight;
+                
+                // For links to sections other than #accueil, scroll to show section but keep welcome visible
+                if (this.getAttribute('href') === '#accueil') {
+                    // Scroll to top for accueil
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // For other sections, position to show section but keep welcome visible
+                    const targetPosition = target.offsetTop - welcomeHeight - navbarHeight - 50;
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+
+    // Navbar collapse on link click (mobile)
+    const navbarLinks = document.querySelectorAll('.navbar-nav a:not(.dropdown-toggle)');
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    
+    navbarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                const collapseInstance = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse, { toggle: false });
+                collapseInstance.hide();
+            }
+        });
+    });
+
+    // Active navigation link on scroll (anchors only)
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.navbar-nav a[href^="#"]');
+
+    if (sections.length && navLinks.length) {
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').slice(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    }
+
+    // Add hover effects to buttons
+    document.querySelectorAll('.btn').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    console.log('AutoLocation - Page chargée avec succès!');
 });
 
 // ============================================

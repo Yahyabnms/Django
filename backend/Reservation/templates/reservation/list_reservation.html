@@ -1,0 +1,44 @@
+{% extends "base/base.html" %}
+
+{% block title %}Mes Reservations{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Reservations</h1>
+
+    {% if reservations %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Voiture</th>
+                        <th>Client</th>
+                        <th>Debut</th>
+                        <th>Fin</th>
+                        <th>Statut</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr>
+                            <td>#{{ reservation.id }}</td>
+                            <td>{{ reservation.voiture }}</td>
+                            <td>{{ reservation.client }}</td>
+                            <td>{{ reservation.date_debut|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reservation.date_fin|date:"d/m/Y H:i" }}</td>
+                            <td>{{ reservation.get_statut_display }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'reservation-detail' reservation.id %}" class="btn btn-sm btn-primary">Details</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucune reservation trouvee.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.urls import path
 from django.contrib.auth.views import LogoutView
 from .views import HomeView, SignUpView, LoginView, ProfileView
+from Voiture.views import ListeVoituresView
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
@@ -8,4 +9,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('logout/', LogoutView.as_view(next_page='home'), name='logout'),
+    path('voitures/', ListeVoituresView.as_view(), name='liste-voitures'),
 ]

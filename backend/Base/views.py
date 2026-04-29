@@ -6,11 +6,17 @@ from django.contrib import messages
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import UserCreationForm
+from Voiture.models import Voiture
 
 
 class HomeView(View):
     def get(self, request):
-        return render(request, 'base/home.html', {})
+        total_voitures = Voiture.objects.count()
+        
+        context = {
+            'total_voitures': total_voitures,
+        }
+        return render(request, 'base/home.html', context)
 
 
 class SignUpView(CreateView):

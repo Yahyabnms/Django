@@ -1,0 +1,20 @@
+{% extends "base/base.html" %}
+
+{% block title %}Nouvelle Reservation{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Nouvelle reservation</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <a href="{% url 'reservation-list' %}" class="btn btn-outline-secondary">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

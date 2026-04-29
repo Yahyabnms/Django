@@ -1,0 +1,26 @@
+{% extends "base/base.html" %}
+
+{% block title %}Detail Reservation{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Reservation #{{ reservation.id }}</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Client:</strong> {{ reservation.client }}</p>
+            <p><strong>Voiture:</strong> {{ reservation.voiture }}</p>
+            <p><strong>Date debut:</strong> {{ reservation.date_debut|date:"d/m/Y H:i" }}</p>
+            <p><strong>Date fin:</strong> {{ reservation.date_fin|date:"d/m/Y H:i" }}</p>
+            <p><strong>Nombre de jours:</strong> {{ reservation.nombre_jours }}</p>
+            <p><strong>Prix estime:</strong> {{ reservation.prix_estime }}</p>
+            <p><strong>Statut:</strong> {{ reservation.get_statut_display }}</p>
+            <p><strong>Commentaires:</strong> {{ reservation.commentaires|default:"-" }}</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'reservation-list' %}" class="btn btn-secondary">Retour</a>
+    </div>
+</div>
+{% endblock %}
