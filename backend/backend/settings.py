@@ -10,6 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import pymysql
+pymysql.install_as_MySQLdb()
+pymysql.version_info = (2, 2, 1, 'final', 0)  # Tromper Django sur la version
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -100,6 +104,11 @@ DATABASES = {
 # Désactiver la vérification de version MariaDB
 from django.db.backends.mysql.base import DatabaseWrapper
 DatabaseWrapper.check_database_version_supported = lambda self: None
+
+# Désactiver RETURNING sur MariaDB 10.4 (non supporté)
+from django.db.backends.mysql.features import DatabaseFeatures
+DatabaseFeatures.can_return_columns_from_insert = False
+DatabaseFeatures.can_return_rows_from_bulk_insert = False
 
 # Configuration de l'authentification
 LOGIN_URL = '/login/'

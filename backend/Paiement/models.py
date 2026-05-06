@@ -8,6 +8,7 @@ class Paiement(models.Model):
     
     METHODE_CHOICES = [
         ('carte', 'Carte bancaire'),
+        ('paypal', 'PayPal'),
         ('espece', 'Espèce'),
         ('cheque', 'Chèque'),
         ('virement', 'Virement'),
@@ -35,13 +36,13 @@ class Paiement(models.Model):
         ordering = ['-date_paiement']
 
     def __str__(self):
-        return f"Paiement {self.id} - {self.montant}€ ({self.statut})"
+        return f"Paiement {self.id} - {self.montant} DH ({self.statut})"
     
     def details_paiement(self):
         """Retourne les détails du paiement."""
         return (f"ID: {self.id}\n"
                 f"Client: {self.client}\n"
-                f"Montant: {self.montant}€\n"
+                f"Montant: {self.montant} DH\n"
                 f"Méthode: {self.get_methode_paiement_display()}\n"
                 f"Statut: {self.get_statut_display()}\n"
                 f"Date: {self.date_paiement.strftime('%d/%m/%Y %H:%M')}\n"

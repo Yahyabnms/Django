@@ -7,7 +7,7 @@ class Client(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    telephone = models.CharField(max_length=15)
+    telephone = models.CharField(max_length=20)
     adresse = models.TextField()
     date_inscription = models.DateTimeField(auto_now_add=True)
     actif = models.BooleanField(default=True)

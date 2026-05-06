@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from Client.models import Client
 from Location.models import Location
+from Reservation.models import Reservation
 
 
 class Contrat(models.Model):
@@ -14,7 +15,8 @@ class Contrat(models.Model):
     ]
     
     numero_contrat = models.CharField(max_length=50, unique=True)
-    location = models.OneToOneField(Location, on_delete=models.PROTECT)
+    location = models.OneToOneField(Location, on_delete=models.PROTECT, null=True, blank=True)
+    reservation = models.OneToOneField(Reservation, on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
     date_signature = models.DateTimeField(auto_now_add=True)
     date_expiration = models.DateTimeField()

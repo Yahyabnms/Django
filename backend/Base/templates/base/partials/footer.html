@@ -1,0 +1,40 @@
+<footer class="site-footer mt-5">
+  <div class="container py-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h5 class="footer-title">AutoLocation</h5>
+        <p class="footer-text">
+          Votre partenaire de confiance pour la location de voitures au Maroc.
+        </p>
+      </div>
+
+      <div class="col-md-4">
+        <h5 class="footer-title">Liens rapides</h5>
+        <ul class="list-unstyled footer-links">
+          <li><a href="{% url 'home' %}">Accueil</a></li>
+          <li><a href="{% url 'liste-voitures' %}">Voitures</a></li>
+          <li><a href="{% url 'home' %}#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="col-md-4">
+        <h5 class="footer-title">Contact</h5>
+        <p class="footer-text mb-2"><i class="fas fa-phone me-2"></i>+212 6 51 18 19 20</p>
+        <p class="footer-text mb-3"><i class="fas fa-envelope me-2"></i>location-voiture@gmail.com</p>
+        <div class="d-flex gap-3">
+          <a class="footer-social" href="#" aria-label="Facebook"><i class="fab fa-facebook fa-lg"></i></a>
+          <a class="footer-social" href="#" aria-label="Twitter"><i class="fab fa-twitter fa-lg"></i></a>
+          <a class="footer-social" href="#" aria-label="Instagram"><i class="fab fa-instagram fa-lg"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="footer-divider my-4" />
+
+    <div class="text-center footer-bottom">
+      <p class="mb-0">
+        <i class="fas fa-car me-2"></i>AutoLocation © 2026 - Tous droits réservés
+      </p>
+    </div>
+  </div>
+</footer>

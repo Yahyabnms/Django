@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
 
 
 class CategorieVoiture(models.Model):
@@ -39,6 +41,12 @@ class Voiture(models.Model):
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='disponible')
     kilométrage = models.IntegerField(default=0)
     image = models.ImageField(upload_to='voitures/', null=True, blank=True)
+    
+    # Champs pour le suivi GPS
+    latitude = models.FloatField(null=True, blank=True, help_text="Latitude actuelle")
+    longitude = models.FloatField(null=True, blank=True, help_text="Longitude actuelle")
+    derniere_mise_a_jour_gps = models.DateTimeField(null=True, blank=True, help_text="Dernière mise à jour de la position")
+    
     date_ajout = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -63,3 +71,39 @@ class Voiture(models.Model):
     def is_available(self):
         """Vérifie si la voiture est disponible."""
         return self.statut == 'disponible'
+    
+    def is_available_for_dates(self, date_debut, date_fin):
+        """
+        Vérifie si la voiture est disponible pour une période donnée.
+        Prend en compte les locations en cours et les réservations confirmées.
+        """
+        from Location.models import Location
+        from Reservation.models import Reservation
+        
+        # Vérifier si la voiture est marquée comme disponible
+        if self.statut != 'disponible':
+            return False
+        
+        # Vérifier les locations en cours ou à venir qui chevauchent la période
+        locations_chevauchantes = Location.objects.filter(
+            voiture=self,
+            statut='en_cours'
+        ).filter(
+            models.Q(date_debut__lte=date_fin) & models.Q(date_fin__gte=date_debut)
+        )
+        
+        if locations_chevauchantes.exists():
+            return False
+        
+        # Vérifier les réservations confirmées ou activées qui chevauchent la période
+        reservations_chevauchantes = Reservation.objects.filter(
+            voiture=self,
+            statut__in=['confirmee', 'activee']
+        ).filter(
+            models.Q(date_debut__lte=date_fin) & models.Q(date_fin__gte=date_debut)
+        )
+        
+        if reservations_chevauchantes.exists():
+            return False
+        
+        return True

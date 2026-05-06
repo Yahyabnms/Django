@@ -53,7 +53,8 @@ class CreateReservationView(CreateView):
             voiture=reservation.voiture,
             date_debut=reservation.date_debut,
             date_fin=reservation.date_fin,
-            prix_journalier=reservation.prix_estime / reservation.nombre_jours
+            prix_total=reservation.prix_estime,
+            statut='en_cours'
         )
         
         # Créer le contrat associé
@@ -155,7 +156,7 @@ def create_reservation(request):
                 return JsonResponse({'success': False, 'message': 'Cette voiture n\'est pas disponible pour ces dates'})
             
             # Récupérer ou créer le client
-            telephone = request.POST.get('telephone', '')
+            telephone = request.POST.get('telephone', '')[:15]
             client, created = Client.objects.get_or_create(
                 email=request.user.email if hasattr(request.user, 'email') else f"{request.user.username}@example.com",
                 defaults={
@@ -208,11 +209,12 @@ def create_reservation(request):
             
             # Créer le paiement
             from Paiement.models import Paiement
+            methode_paiement = request.POST.get('methode_paiement', 'carte')
             paiement = Paiement.objects.create(
                 client=client,
                 location=location,
                 montant=prix_estime + assurance.prix,  # Prix total avec assurance
-                methode_paiement='carte',
+                methode_paiement=methode_paiement,
                 statut='en_attente',
                 numero_transaction=f"TRANS-{reservation.id}-{timezone.now().strftime('%Y%m%d%H%M%S')}"
             )
@@ -224,7 +226,7 @@ def create_reservation(request):
                 location=location,
                 client=client,
                 date_expiration=date_fin,
-                conditions=f"Location de {voiture.marque} {voiture.modele} du {date_debut.strftime('%d/%m/%Y')} au {date_fin.strftime('%d/%m/%Y')}. Assurance incluse. Paiement: {paiement.montant}€."
+                conditions=f"Location de {voiture.marque} {voiture.modele} du {date_debut.strftime('%d/%m/%Y')} au {date_fin.strftime('%d/%m/%Y')}. Assurance incluse. Paiement: {paiement.montant} DH."
             )
             
             return JsonResponse({
@@ -237,7 +239,8 @@ def create_reservation(request):
                     'paiement_id': paiement.id,
                     'contrat_id': contrat.id,
                     'contrat_number': contrat.numero_contrat,
-                    'total_price': float(paiement.montant)
+                    'total_price': float(paiement.montant),
+                    'methode_paiement': paiement.get_methode_paiement_display()
                 }
             })
         except Exception as e:

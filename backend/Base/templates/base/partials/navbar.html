@@ -1,0 +1,95 @@
+<nav class="navbar navbar-expand-lg navbar-light sticky-top navbar-enhanced">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand" href="{% url 'home' %}" title="AutoLocation - Location de voitures">
+      <i class="fas fa-car-side"></i>
+      <span class="brand-text">AutoLocation</span>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Menu de navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Menu -->
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <!-- Home Link -->
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}" title="Retour à l'accueil">
+            <i class="fas fa-home me-2"></i>Accueil
+          </a>
+        </li>
+
+        <!-- Voitures Link -->
+        <li class="nav-item">
+          <a class="nav-link {% if request.resolver_match.url_name == 'liste-voitures' %}active{% endif %}" href="{% url 'liste-voitures' %}" title="Parcourir nos voitures">
+            <i class="fas fa-car me-2"></i>Voitures
+          </a>
+        </li>
+
+        <!-- Contact Link with Smooth Scroll -->
+        <li class="nav-item">
+          <a class="nav-link nav-contact" href="#contact" onclick="handleContactClick(event)" title="Nous contacter">
+            <i class="fas fa-envelope me-2"></i>Contact
+          </a>
+        </li>
+
+        <!-- Authenticated User Links -->
+        {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Menu utilisateur">
+              <i class="fas fa-user-circle me-2"></i>{{ user.first_name|default:user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-id-card me-2"></i>Mon Profil</a></li>
+              <li><a class="dropdown-item" href="{% url 'mes-reservations' %}"><i class="fas fa-calendar-alt me-2"></i>Mes Réservations</a></li>
+              <li><a class="dropdown-item" href="{% url 'mes-contrats' %}"><i class="fas fa-file-contract me-2"></i>Mes Contrats</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Déconnexion</a></li>
+            </ul>
+          </li>
+
+        <!-- Unauthenticated User Links -->
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}" title="Se connecter à votre compte">
+              <i class="fas fa-sign-in-alt me-2"></i>Connexion
+            </a>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-primary btn-sm nav-cta" href="{% url 'signup' %}" title="Créer un nouveau compte">
+              <i class="fas fa-user-plus me-1"></i>Inscription
+            </a>
+          </li>
+        {% endif %}
+
+        <!-- Theme Toggle Button -->
+        <li class="nav-item d-flex align-items-center ms-lg-2 mt-2 mt-lg-0">
+          <button id="toggleTheme" class="theme-toggle-btn" type="button" aria-label="Basculer le mode sombre/clair" title="Mode sombre/clair">
+            <i class="fas fa-moon"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+// Smooth scroll function for contact link
+function scrollToContactSection(event) {
+  event.preventDefault();
+  const contactSection = document.getElementById('contact');
+  if (contactSection) {
+    // Close mobile menu if open
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+      const collapseInstance = bootstrap.Collapse.getInstance(navbarCollapse) || new bootstrap.Collapse(navbarCollapse, { toggle: false });
+      collapseInstance.hide();
+    }
+    // Smooth scroll
+    contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.history.pushState(null, null, '#contact');
+  }
+}
+</script>

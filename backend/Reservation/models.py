@@ -40,7 +40,7 @@ class Reservation(models.Model):
                 f"Début: {self.date_debut.strftime('%d/%m/%Y %H:%M')}\n"
                 f"Fin: {self.date_fin.strftime('%d/%m/%Y %H:%M')}\n"
                 f"Nombre de jours: {self.nombre_jours}\n"
-                f"Prix estimé: {self.prix_estime}€\n"
+                f"Prix estimé: {self.prix_estime} DH\n"
                 f"Statut: {self.get_statut_display()}")
     
     def is_confirmed(self):

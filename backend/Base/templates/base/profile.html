@@ -2,6 +2,13 @@
 {% block title %}Mon Profil{% endblock %}
 {% block content %}
 
+    <div class="page-hero">
+        <div class="container text-center">
+            <h1 class="display-5 fw-bold mb-2">Mon Profil</h1>
+            <p class="lead mb-0">Gérez vos informations et accédez à vos réservations.</p>
+        </div>
+    </div>
+
     <!-- Profile Section -->
     <section class="py-5">
         <div class="container">
@@ -85,8 +92,11 @@
                         <a href="{% url 'home' %}" class="btn btn-outline-primary">
                             <i class="fas fa-home"></i> Retour à l'accueil
                         </a>
-                        <a href="{% url 'liste-voitures' %}" class="btn btn-primary">
-                            <i class="fas fa-car"></i> Voir les voitures
+                        <a href="{% url 'mes-reservations' %}" class="btn btn-info text-white">
+                            <i class="fas fa-calendar-alt"></i> Mes Réservations
+                        </a>
+                        <a href="{% url 'mes-contrats' %}" class="btn btn-success">
+                            <i class="fas fa-file-contract"></i> Mes Contrats
                         </a>
                         <a href="{% url 'logout' %}" class="btn btn-danger">
                             <i class="fas fa-sign-out-alt"></i> Se déconnecter

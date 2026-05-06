@@ -23,7 +23,7 @@ class Assurance(models.Model):
         return (f"ID: {self.idAssurance}\n"
                 f"Nom: {self.nomAssurance}\n"
                 f"Type: {self.typeAssurance}\n"
-                f"Prix: {self.prix}€\n"
+                f"Prix: {self.prix} DH\n"
                 f"Date début: {self.dateDebut}\n"
                 f"Date fin: {self.dateFin}")
     

@@ -3,17 +3,106 @@
 {% block title %}Accueil - AutoLocation{% endblock %}
 
 {% block content %}
-
-    <!-- Hero Section -->
-    <section id="accueil" class="hero gradient-hero">
-        <div class="container text-center">
-            <h1 class="display-3 fw-bold mb-3 text-white">Bienvenue sur AutoLocation</h1>
-            <p class="lead mb-4 text-white">Votre solution de gestion de locations de voitures</p>
-            <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="#services" class="btn btn-primary btn-lg hover-lift">Découvrir plus</a>
-                <a href="{% url 'liste-voitures' %}" class="btn btn-light btn-lg text-primary hover-lift">Voir nos voitures</a>
+    <!-- Hero Slider (Gocar-like) -->
+    <div class="hero-section">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1619405399517-d4dc2500eaa0?w=1600');">
+                        <div class="container">
+                            <div class="slide-content">
+                                <h2 class="display-5 mb-3">Luxe, Performance et Flexibilité</h2>
+                                <p class="mb-4">Découvrez notre sélection premium de véhicules, disponibles partout au Maroc.</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a href="{% url 'liste-voitures' %}" class="btn btn-primary btn-lg">Voir les voitures</a>
+                                    <a href="/#process" class="btn btn-light btn-lg">Comment ça marche</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1552820728-8ac41f1ce891?w=1600');">
+                        <div class="container">
+                            <div class="slide-content">
+                                <h2 class="display-5 mb-3">Confort et économies sans compromis</h2>
+                                <p class="mb-4">Louez une voiture fiable et bien entretenue à un prix imbattable.</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a href="{% url 'liste-voitures' %}" class="btn btn-primary btn-lg">Réserver</a>
+                                    <a href="/#featured" class="btn btn-light btn-lg">Voitures en vedette</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="carousel-slide" style="background-image: url('https://images.unsplash.com/photo-1566023967268-70fbd8ac6e84?w=1600');">
+                        <div class="container">
+                            <div class="slide-content">
+                                <h2 class="display-5 mb-3">Disponibilité 24/7, support 24/7</h2>
+                                <p class="mb-4">Modifiez votre réservation facilement et bénéficiez d’un support réactif.</p>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a href="/#faq" class="btn btn-light btn-lg">FAQ</a>
+                                    <a href="/#contact" class="btn btn-primary btn-lg">Contact</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Précédent</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Suivant</span>
+            </button>
         </div>
+    </div>
+
+    <!-- Search Section (visual, gocar-like) -->
+    <section class="container search-section" aria-label="Recherche">
+        <form action="{% url 'liste-voitures' %}" method="GET" class="search-card">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-3 col-sm-6">
+                    <div class="search-field">
+                        <label><i class="fas fa-map-marker-alt me-2"></i>Lieu de départ</label>
+                        <select name="lieu_depart" class="form-select">
+                            <option selected>Casablanca</option>
+                            <option>Marrakech</option>
+                            <option>Agadir</option>
+                            <option>Rabat</option>
+                            <option>Tanger</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="search-field">
+                        <label><i class="fas fa-map-marker-alt me-2"></i>Lieu d'arrivée</label>
+                        <select name="lieu_arrivee" class="form-select">
+                            <option selected>Casablanca</option>
+                            <option>Marrakech</option>
+                            <option>Agadir</option>
+                            <option>Rabat</option>
+                            <option>Tanger</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="search-field">
+                        <label><i class="fas fa-calendar me-2"></i>Date départ</label>
+                        <input name="date_depart" class="form-control" type="date" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <button type="submit" class="btn btn-primary search-btn">
+                        <i class="fas fa-search me-2"></i>Rechercher
+                    </button>
+                </div>
+            </div>
+        </form>
     </section>
 
     <!-- Stats Section -->
@@ -56,6 +145,110 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process / How it works -->
+    <section id="process" class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-2">Comment ça marche</h2>
+                <p class="text-muted mb-0">Réservez en quelques étapes, simplement.</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 card-modern">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-map-marker-alt fa-2x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Choisir un lieu</h5>
+                            <p class="text-muted mb-0">Sélectionnez votre ville de départ et d’arrivée.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 card-modern">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-calendar-alt fa-2x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Choisir une date</h5>
+                            <p class="text-muted mb-0">Définissez la période qui vous convient.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100 card-modern">
+                        <div class="card-body text-center p-4">
+                            <i class="fas fa-car-side fa-2x text-primary mb-3"></i>
+                            <h5 class="fw-bold">Réserver une voiture</h5>
+                            <p class="text-muted mb-0">Choisissez un véhicule et confirmez en ligne.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured cars (uses existing queryset if present) -->
+    <section id="featured" class="featured-cars py-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+                <div>
+                    <h2 class="fw-bold mb-1">Voitures en vedette</h2>
+                    <p class="text-muted mb-0">Une sélection de véhicules populaires.</p>
+                </div>
+                <a class="btn btn-outline-primary" href="{% url 'liste-voitures' %}">
+                    Voir tout <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                {% for voiture in voitures|slice:":6" %}
+                    {% if voiture.statut == 'disponible' %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="car-card-modern">
+                            {% if voiture.image %}
+                                <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1503376763036-066120622c74?w=400&h=250&fit=crop&q=80&auto=format" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+                            {% endif %}
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                                    <div>
+                                        <h5 class="fw-bold mb-1">{{ voiture.marque }} {{ voiture.modele }}</h5>
+                                        <span class="badge bg-warning text-dark mb-2">{{ voiture.categorie.nom|default:"Standard" }}</span>
+                                    </div>
+                                    <span class="badge bg-success">Disponible</span>
+                                </div>
+                                
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <span class="feature-tag">
+                                        <i class="fas fa-calendar-alt me-1"></i>{{ voiture.annee }}
+                                    </span>
+                                    <span class="feature-tag">
+                                        <i class="fas fa-gas-pump me-1"></i>{{ voiture.categorie.type_carburant|default:"N/A" }}
+                                    </span>
+                                    <span class="feature-tag">
+                                        <i class="fas fa-cog me-1"></i>{{ voiture.categorie.transmission|default:"N/A" }}
+                                    </span>
+                                </div>
+                                
+                                <p class="text-muted small mb-3">
+                                    <i class="fas fa-tachometer-alt me-1"></i>{{ voiture.kilométrage|floatformat:0 }} km
+                                </p>
+                                
+                                <div class="car-price h5 mb-3"><i class="fas fa-tag me-2 text-primary"></i>{{ voiture.prix_par_jour }} DH <small class="text-muted fs-6 fw-normal">/ jour</small></div>
+                                <a class="btn btn-primary w-100" href="{% url 'reserver-voiture' voiture.id %}"><i class="fas fa-calendar-check me-2"></i>Louer maintenant</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center mb-0">
+                            Aucune voiture à afficher pour le moment.
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -133,12 +326,52 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-5 bg-white">
-        <div class="container text-center">
-            <h2 class="fw-bold mb-3">Contact</h2>
-            <p class="mb-1">Email: location-voiture@gmail.com</p>
-            <p class="mb-0">Tel: +212 6 51 18 19 20</p>
+    <!-- FAQ -->
+    <section id="faq" class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold mb-2">Questions fréquentes</h2>
+                <p class="text-muted mb-0">Si vous avez des questions, nous avons les réponses.</p>
+            </div>
+
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseOne" aria-expanded="true" aria-controls="faqCollapseOne">
+                            Quel est l’âge minimum pour louer une voiture ?
+                        </button>
+                    </h2>
+                    <div id="faqCollapseOne" class="accordion-collapse collapse show" aria-labelledby="faqOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            En général, l’âge minimum est de 21 ans. Certains véhicules peuvent exiger 25 ans.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseTwo" aria-expanded="false" aria-controls="faqCollapseTwo">
+                            Puis-je réserver en ligne ?
+                        </button>
+                    </h2>
+                    <div id="faqCollapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Oui, vous pouvez réserver via le site. Une confirmation vous sera envoyée.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faqThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapseThree" aria-expanded="false" aria-controls="faqCollapseThree">
+                            Proposez-vous la livraison ?
+                        </button>
+                    </h2>
+                    <div id="faqCollapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Oui, nous pouvons livrer à l’aéroport, à l’hôtel ou à domicile selon la ville.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 

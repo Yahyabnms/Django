@@ -5,346 +5,81 @@
 
 {% block extra_css %}
 <style>
-    .reservation-card {
-        max-width: 800px;
-        margin: 2rem auto;
-        border-radius: 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-
-    .car-image-container {
-        position: relative;
-        height: 300px;
-        overflow: hidden;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .car-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-    }
-
-    .car-image:hover {
-        transform: scale(1.05);
-    }
-
-    .car-badge {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        padding: 8px 16px;
-        border-radius: 25px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        backdrop-filter: blur(10px);
-    }
-
-    .badge-available {
-        background: rgba(40, 167, 69, 0.9);
-        color: white;
-    }
-
-    .badge-unavailable {
-        background: rgba(220, 53, 69, 0.9);
-        color: white;
-    }
-
-    .car-info {
-        padding: 2rem;
-        background: white;
-    }
-
-    .car-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #1a1a2e;
-        margin-bottom: 0.5rem;
-    }
-
-    .car-price {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #667eea;
-        margin-bottom: 1rem;
-    }
-
-    .car-specs {
-        color: #333;
-        font-size: 1.1rem;
-        line-height: 2;
-    }
-
-    .car-specs strong {
-        color: #1a1a2e;
-        font-weight: 600;
-    }
-
-    .form-section {
-        padding: 2rem;
-        background: #ffffff;
-        border-top: 1px solid #e9ecef;
-    }
-
-    .form-label {
-        font-weight: 600;
-        color: #1a1a2e;
-        margin-bottom: 0.5rem;
-    }
-
-    .form-control {
-        border-radius: 10px;
-        padding: 0.75rem 1rem;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-
-    .days-display {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1rem;
-        border-radius: 10px;
-        text-align: center;
-        margin: 1rem 0;
-        font-weight: 600;
-    }
-
-    .price-display {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        text-align: center;
-        margin: 1rem 0;
-        font-weight: 700;
-        font-size: 1.5rem;
-        animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% {
-            transform: scale(1);
-        }
-        50% {
-            transform: scale(1.02);
-        }
-    }
-
-    .availability-status {
-        padding: 1rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        font-weight: 600;
-        text-align: center;
-        display: none;
-    }
-
-    .status-available {
-        background: rgba(40, 167, 69, 0.1);
-        color: #28a745;
-        border: 2px solid #28a745;
-    }
-
-    .status-unavailable {
-        background: rgba(220, 53, 69, 0.1);
-        color: #dc3545;
-        border: 2px solid #dc3545;
-    }
-
-    .btn-confirm {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        padding: 1rem 2rem;
-        font-weight: 600;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-        width: 100%;
-    }
-
-    .btn-confirm:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    .btn-confirm:disabled {
-        background: #6c757d;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    .alert-custom {
-        border-radius: 10px;
-        margin-top: 1rem;
-        display: none;
-    }
-
-    .calendar-icon {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #667eea;
-    }
-
-    .date-input-wrapper {
+    .payment-option {
         position: relative;
     }
-
-    .feature-icon {
-        width: 20px;
-        height: 20px;
-        margin-right: 8px;
+    .payment-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
     }
-
-    /* Mode sombre */
-    @media (prefers-color-scheme: dark) {
-        body {
-            background: linear-gradient(135deg, #2d2d44 0%, #3d3d5c 100%);
-        }
-
-        .car-info {
-            background: #3d3d5c;
-        }
-
-        .car-title {
-            color: #ffffff;
-        }
-
-        .car-specs {
-            color: #ffffff;
-            font-size: 1.2rem;
-        }
-
-        .car-specs strong {
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .form-section {
-            background: #3d3d5c;
-            border-top-color: #555;
-        }
-
-        .form-label {
-            color: #ffffff;
-            font-size: 1.1rem;
-        }
-
-        .form-control {
-            background: #4a4a6a;
-            border-color: #666;
-            color: #ffffff;
-            font-size: 1rem;
-        }
-
-        .form-control:focus {
-            border-color: #667eea;
-            background: #4a4a6a;
-        }
-
-        .navbar {
-            background: rgba(61, 61, 92, 0.95);
-        }
-
-        .nav-link {
-            color: #ffffff !important;
-        }
-
-        .nav-link:hover {
-            color: #667eea !important;
-        }
+    .payment-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px 10px;
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        background: #fff;
     }
-
-    /* Classe pour le mode sombre manuel */
-    .dark-mode {
-        background: linear-gradient(135deg, #2d2d44 0%, #3d3d5c 100%) !important;
+    .payment-label:hover {
+        border-color: #0d6efd;
+        background: #f0f6ff;
     }
-
-    .dark-mode .car-info {
-        background: #3d3d5c !important;
+    .payment-option input[type="radio"]:checked + .payment-label {
+        border-color: #0d6efd;
+        background: #e7f1ff;
+        box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
     }
-
-    .dark-mode .car-title {
-        color: #ffffff !important;
+    .payment-label i {
+        color: #6c757d;
+        transition: color 0.3s;
     }
-
-    .dark-mode .car-specs {
-        color: #ffffff !important;
-        font-size: 1.2rem !important;
+    .payment-option input[type="radio"]:checked + .payment-label i {
+        color: #0d6efd;
     }
-
-    .dark-mode .car-specs strong {
-        color: #ffffff !important;
-        font-weight: 700 !important;
+    .payment-label span {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #495057;
     }
-
-    .dark-mode .form-section {
-        background: #3d3d5c !important;
-        border-top-color: #555 !important;
-    }
-
-    .dark-mode .form-label {
-        color: #ffffff !important;
-        font-size: 1.1rem !important;
-    }
-
-    .dark-mode .form-control {
-        background: #4a4a6a !important;
-        border-color: #666 !important;
-        color: #ffffff !important;
-        font-size: 1rem !important;
-    }
-
-    .dark-mode .form-control:focus {
-        border-color: #667eea !important;
-        background: #4a4a6a !important;
-    }
-
-    .dark-mode .navbar {
-        background: rgba(61, 61, 92, 0.95) !important;
-    }
-
-    .dark-mode .nav-link {
-        color: #ffffff !important;
-    }
-
-    .dark-mode .nav-link:hover {
-        color: #667eea !important;
+    .payment-option input[type="radio"]:checked + .payment-label span {
+        color: #0d6efd;
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="page-hero">
+    <div class="container text-center">
+        <h1 class="display-5 fw-bold mb-2">Réserver</h1>
+        <p class="lead mb-0">{{ voiture.marque }} {{ voiture.modele }} • {{ voiture.prix_par_jour }} DH / jour</p>
+    </div>
+</div>
+
 <div class="container">
     <div class="reservation-card">
         <!-- Section Voiture -->
-        <div class="car-image-container">
+        <div class="reservation-hero">
             {% if voiture.image %}
-                <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+                <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}">
             {% else %}
-                <div class="car-image d-flex align-items-center justify-content-center">
-                    <div class="text-white text-center">
-                        <i class="fas fa-car fa-4x mb-3"></i>
-                        <p class="h4">Image non disponible</p>
-                    </div>
-                </div>
+                <img src="https://images.unsplash.com/photo-1503376763036-066120622c74?w=800&h=400&fit=crop&q=80&auto=format" alt="{{ voiture.marque }} {{ voiture.modele }}" style="width: 100%; height: 100%; object-fit: cover;">
             {% endif %}
             <span class="car-badge {% if voiture.statut == 'disponible' %}badge-available{% else %}badge-unavailable{% endif %}">
                 <i class="fas fa-circle mr-2"></i>{{ voiture.get_statut_display }}
             </span>
         </div>
 
-        <div class="car-info">
-            <h1 class="car-title">{{ voiture.marque }} {{ voiture.modele }}</h1>
-            <p class="car-price">
-                <i class="fas fa-tag feature-icon"></i>{{ voiture.prix_par_jour }} DH / jour
+        <div class="reservation-body">
+            <h2 class="car-title h3">{{ voiture.marque }} {{ voiture.modele }}</h2>
+            <p class="car-price h5 mb-3">
+                <i class="fas fa-tag me-2"></i>{{ voiture.prix_par_jour }} DH / jour
             </p>
             <div class="car-specs">
                 <div class="row">
@@ -375,7 +110,7 @@
         </div>
 
         <!-- Formulaire de Réservation -->
-        <div class="form-section">
+        <div class="reservation-form">
             <h3 class="mb-4">
                 <i class="fas fa-calendar-check mr-2"></i>Réserver cette voiture
             </h3>
@@ -421,30 +156,184 @@
                     </div>
                 </div>
 
-                <div class="days-display" id="daysDisplay" style="display: none;">
-                    <i class="fas fa-clock mr-2"></i>
+                <!-- Méthode de paiement -->
+                <div class="form-group mb-4">
+                    <label class="form-label fw-bold mb-3">
+                        <i class="fas fa-credit-card me-2"></i>Méthode de paiement
+                    </label>
+                    <div class="row g-3">
+                        <div class="col-md-3 col-6">
+                            <div class="payment-option" data-method="carte">
+                                <input type="radio" name="methode_paiement" value="carte" id="pay_carte" checked>
+                                <label for="pay_carte" class="payment-label">
+                                    <i class="fab fa-cc-mastercard fa-2x mb-2"></i>
+                                    <span>Carte bancaire</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-6">
+                            <div class="payment-option" data-method="paypal">
+                                <input type="radio" name="methode_paiement" value="paypal" id="pay_paypal">
+                                <label for="pay_paypal" class="payment-label">
+                                    <i class="fab fa-cc-paypal fa-2x mb-2"></i>
+                                    <span>PayPal</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <div class="payment-option" data-method="espece">
+                                <input type="radio" name="methode_paiement" value="espece" id="pay_espece">
+                                <label for="pay_espece" class="payment-label">
+                                    <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+                                    <span>Espèces</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <div class="payment-option" data-method="cheque">
+                                <input type="radio" name="methode_paiement" value="cheque" id="pay_cheque">
+                                <label for="pay_cheque" class="payment-label">
+                                    <i class="fas fa-file-invoice-dollar fa-2x mb-2"></i>
+                                    <span>Chèque</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-6">
+                            <div class="payment-option" data-method="virement">
+                                <input type="radio" name="methode_paiement" value="virement" id="pay_virement">
+                                <label for="pay_virement" class="payment-label">
+                                    <i class="fas fa-university fa-2x mb-2"></i>
+                                    <span>Virement</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Détails Carte bancaire -->
+                <div id="cardDetails" class="payment-details mb-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-lock me-2 text-success"></i>Informations de carte</h6>
+                            <div class="mb-3">
+                                <label for="card_number" class="form-label">Numéro de carte</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-cc-mastercard"></i></span>
+                                    <input type="text" class="form-control" id="card_number" name="card_number" 
+                                           placeholder="1234 5678 9012 3456" maxlength="19" autocomplete="cc-number">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="card_expiry" class="form-label">Date d'expiration</label>
+                                    <input type="text" class="form-control" id="card_expiry" name="card_expiry" 
+                                           placeholder="MM/AA" maxlength="5" autocomplete="cc-exp">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="card_cvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="card_cvv" name="card_cvv" 
+                                           placeholder="123" maxlength="3" autocomplete="cc-csc">
+                                </div>
+                            </div>
+                            <div class="mb-0">
+                                <label for="card_name" class="form-label">Nom sur la carte</label>
+                                <input type="text" class="form-control" id="card_name" name="card_name" 
+                                       placeholder="NOM PRENOM" autocomplete="cc-name">
+                            </div>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-shield-alt me-1"></i>Vos données sont sécurisées</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Détails PayPal -->
+                <div id="paypalDetails" class="payment-details mb-4" style="display: none;">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3"><i class="fab fa-paypal me-2 text-primary"></i>Paiement via PayPal</h6>
+                            <div class="mb-3">
+                                <label for="paypal_email" class="form-label">Email PayPal</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-paypal"></i></span>
+                                    <input type="email" class="form-control" id="paypal_email" name="paypal_email" 
+                                           placeholder="votre@email.com">
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-shield-alt me-1"></i>Vous serez redirigé vers PayPal pour confirmer</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Détails Virement -->
+                <div id="virementDetails" class="payment-details mb-4" style="display: none;">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h6 class="fw-bold mb-3"><i class="fas fa-university me-2 text-success"></i>Virement bancaire</h6>
+                            <p class="text-muted mb-3">Veuillez effectuer le virement vers le compte suivant :</p>
+                            <div class="bg-light rounded p-3 mb-3">
+                                <div class="row g-2">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Banque</small>
+                                        <p class="fw-bold mb-2">Attijariwafa Bank</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">Titulaire du compte</small>
+                                        <p class="fw-bold mb-2">AutoLocation SARL</p>
+                                    </div>
+                                    <div class="col-12">
+                                        <small class="text-muted">RIB</small>
+                                        <div class="d-flex align-items-center">
+                                            <p class="fw-bold mb-0 font-monospace fs-5" id="ribNumber">MA76 0000 0000 0000 0012 3456 7890</p>
+                                            <button type="button" class="btn btn-sm btn-outline-primary ms-2" onclick="copyRIB(this)" title="Copier le RIB">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="alert alert-info mb-0 py-2">
+                                <i class="fas fa-info-circle me-1"></i>
+                                <strong>Important :</strong> Lors du virement, indiquez votre nom complet et la référence <strong>"{{ voiture.marque }} {{ voiture.modele }}"</strong> dans le libellé du transfert pour faciliter l'identification de votre paiement.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reservation-metric" id="daysDisplay" style="display: none;">
+                    <i class="fas fa-clock me-2"></i>
                     Durée: <span id="numberOfDays">0</span> jour(s)
                 </div>
 
-                <div class="price-display" id="priceDisplay" style="display: none;">
-                    <i class="fas fa-money-bill-wave mr-2"></i>
+                <div class="reservation-metric secondary" id="priceDisplay" style="display: none;">
+                    <i class="fas fa-money-bill-wave me-2"></i>
                     Prix total: <span id="totalPrice">0</span> DH
+                </div>
+
+                <!-- Méthodes de paiement acceptées -->
+                <div class="mt-4 text-center">
+                    <p class="text-muted mb-2 fw-bold">Méthodes de paiement acceptées</p>
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <i class="fab fa-cc-visa fa-2x text-muted" title="Visa"></i>
+                        <i class="fab fa-cc-mastercard fa-2x text-muted" title="Mastercard"></i>
+                        <i class="fab fa-cc-paypal fa-2x text-muted" title="PayPal"></i>
+                        <i class="fas fa-money-bill-wave fa-2x text-muted" title="Espèces"></i>
+                        <i class="fas fa-university fa-2x text-muted" title="Virement"></i>
+                    </div>
                 </div>
 
                 <div class="availability-status" id="availabilityStatus"></div>
 
-                <div class="alert alert-success alert-custom" id="successAlert">
-                    <i class="fas fa-check-circle mr-2"></i>
+                <div class="alert alert-success alert-custom" id="successAlert" style="display: none;">
+                    <i class="fas fa-check-circle me-2"></i>
                     Réservation envoyée, en attente de validation
                 </div>
 
-                <div class="alert alert-danger alert-custom" id="errorAlert">
-                    <i class="fas fa-exclamation-circle mr-2"></i>
+                <div class="alert alert-danger alert-custom" id="errorAlert" style="display: none;">
+                    <i class="fas fa-exclamation-circle me-2"></i>
                     <span id="errorMessage"></span>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-confirm" id="confirmBtn" disabled>
-                    <i class="fas fa-check mr-2"></i>Confirmer la réservation
+                    <i class="fas fa-check me-2"></i>Confirmer la réservation
                 </button>
             </form>
         </div>
@@ -454,32 +343,28 @@
 
 {% block extra_js %}
 <script>
+    // Fonction globale pour copier le RIB
+    function copyRIB(btn) {
+        const rib = document.getElementById('ribNumber').textContent;
+        navigator.clipboard.writeText(rib.replace(/\s/g, '')).then(function() {
+            // Changer l'icône et le style du bouton
+            btn.innerHTML = '<i class="fas fa-check"></i> Copié!';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            
+            // Revenir à l'état original après 2 secondes
+            setTimeout(() => { 
+                btn.innerHTML = '<i class="fas fa-copy"></i>';
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+            }, 2000);
+        }).catch(function(err) {
+            console.error('Erreur de copie:', err);
+            alert('Erreur lors de la copie du RIB');
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Gestion du mode sombre/clair
-        const toggleThemeBtn = document.getElementById('toggleTheme');
-        if (toggleThemeBtn) {
-            toggleThemeBtn.addEventListener('click', function() {
-                document.body.classList.toggle('dark-mode');
-                const isDark = document.body.classList.contains('dark-mode');
-                const icon = this.querySelector('i');
-                if (icon) {
-                    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-                }
-            });
-        }
-
-        // Vérifier le mode préféré du système
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.body.classList.add('dark-mode');
-            const toggleThemeBtn = document.getElementById('toggleTheme');
-            if (toggleThemeBtn) {
-                const icon = toggleThemeBtn.querySelector('i');
-                if (icon) {
-                    icon.className = 'fas fa-sun';
-                }
-            }
-        }
-
         const dateDebut = document.getElementById('date_debut');
         const dateFin = document.getElementById('date_fin');
         const daysDisplay = document.getElementById('daysDisplay');
@@ -492,13 +377,54 @@
         const errorAlert = document.getElementById('errorAlert');
         const errorMessage = document.getElementById('errorMessage');
         
-        const prixParJour = {{ voiture.prix_par_jour }};
-        const voitureId = {{ voiture.id }};
+        const prixParJour = parseFloat('{{ voiture.prix_par_jour }}');
+        const voitureId = parseInt('{{ voiture.id }}');
 
         // Set minimum date to today
         const today = new Date().toISOString().split('T')[0];
         dateDebut.setAttribute('min', today);
         dateFin.setAttribute('min', today);
+
+        // Gestion des méthodes de paiement
+        const cardDetails = document.getElementById('cardDetails');
+        const paypalDetails = document.getElementById('paypalDetails');
+        const virementDetails = document.getElementById('virementDetails');
+        const paymentRadios = document.querySelectorAll('input[name="methode_paiement"]');
+
+        function updatePaymentForm() {
+            const selected = document.querySelector('input[name="methode_paiement"]:checked').value;
+            cardDetails.style.display = (selected === 'carte') ? 'block' : 'none';
+            paypalDetails.style.display = (selected === 'paypal') ? 'block' : 'none';
+            virementDetails.style.display = (selected === 'virement') ? 'block' : 'none';
+        }
+
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', updatePaymentForm);
+        });
+
+        // Formatage du numéro de carte (espaces tous les 4 chiffres)
+        const cardNumber = document.getElementById('card_number');
+        cardNumber.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            value = value.replace(/(.{4})/g, '$1 ').trim();
+            e.target.value = value;
+        });
+
+        // Formatage de la date d'expiration (MM/AA)
+        const cardExpiry = document.getElementById('card_expiry');
+        cardExpiry.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Limiter le CVV à 3 chiffres
+        const cardCvv = document.getElementById('card_cvv');
+        cardCvv.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
 
         function calculatePrice() {
             const debut = new Date(dateDebut.value);
@@ -600,6 +526,39 @@
         document.getElementById('reservationForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            // Validation du paiement
+            const selectedMethod = document.querySelector('input[name="methode_paiement"]:checked').value;
+            
+            if (selectedMethod === 'carte') {
+                const num = document.getElementById('card_number').value.replace(/\s/g, '');
+                const exp = document.getElementById('card_expiry').value;
+                const cvv = document.getElementById('card_cvv').value;
+                const name = document.getElementById('card_name').value.trim();
+                
+                if (num.length < 13) {
+                    showError('Veuillez entrer un numéro de carte valide');
+                    return;
+                }
+                if (!exp || exp.length < 5) {
+                    showError('Veuillez entrer une date d\'expiration valide (MM/AA)');
+                    return;
+                }
+                if (cvv.length < 3) {
+                    showError('Veuillez entrer un CVV valide');
+                    return;
+                }
+                if (!name) {
+                    showError('Veuillez entrer le nom sur la carte');
+                    return;
+                }
+            } else if (selectedMethod === 'paypal') {
+                const email = document.getElementById('paypal_email').value.trim();
+                if (!email || !email.includes('@')) {
+                    showError('Veuillez entrer un email PayPal valide');
+                    return;
+                }
+            }
+            
             const formData = new FormData(this);
             
             try {
@@ -617,7 +576,7 @@
                     showSuccess();
                     confirmBtn.disabled = true;
                     setTimeout(() => {
-                        window.location.href = '/profile/';
+                        window.location.href = '/mes-contrats/';
                     }, 2000);
                 } else {
                     showError(data.message || 'Erreur lors de la réservation');

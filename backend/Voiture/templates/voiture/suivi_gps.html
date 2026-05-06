@@ -1,0 +1,205 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Suivi GPS - {{ voiture.marque }} {{ voiture.modele }}{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+    #map {
+        height: 600px;
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1;
+    }
+    .gps-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+    }
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 1.5rem;
+    }
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+    }
+    .status-active {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    .status-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gps-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1 class="h2 mb-1 fw-bold"><i class="fas fa-map-marker-alt me-2"></i>Suivi GPS en direct</h1>
+                <p class="mb-0 text-white-50">{{ voiture.marque }} {{ voiture.modele }} ({{ voiture.immatriculation }})</p>
+            </div>
+            <div>
+                <a href="{% url 'liste-voitures' %}" class="btn btn-light"><i class="fas fa-arrow-left me-2"></i>Retour aux voitures</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="info-card">
+                <h5 class="fw-bold mb-3">Statut du Tracker</h5>
+                
+                <div class="mb-3">
+                    <span id="tracker-status" class="status-badge status-inactive">
+                        <i class="fas fa-satellite-dish me-1"></i> En attente du signal...
+                    </span>
+                </div>
+                
+                <hr>
+                
+                <div class="mb-2">
+                    <small class="text-muted d-block">Dernière mise à jour</small>
+                    <strong id="last-update">--</strong>
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted d-block">Latitude</small>
+                    <span id="lat-val">--</span>
+                </div>
+                
+                <div class="mb-2">
+                    <small class="text-muted d-block">Longitude</small>
+                    <span id="lng-val">--</span>
+                </div>
+                
+                <div class="mt-4">
+                    <button id="refresh-btn" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-sync-alt me-2"></i>Rafraîchir
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const voitureId = {{ voiture.id }};
+        const apiUrl = `/api/voiture/${voitureId}/gps/`;
+        
+        // Coordonnées par défaut (Maroc - Casablanca par ex)
+        let currentLat = 33.5731;
+        let currentLng = -7.5898;
+        let map;
+        let marker;
+        
+        // Initialiser la carte
+        function initMap() {
+            map = L.map('map').setView([currentLat, currentLng], 6);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+            
+            // Icône personnalisée pour la voiture
+            const carIcon = L.icon({
+                iconUrl: 'https://cdn-icons-png.flaticon.com/512/3204/3204005.png', // Icône de voiture générique
+                iconSize: [40, 40],
+                iconAnchor: [20, 20],
+                popupAnchor: [0, -20]
+            });
+            
+            marker = L.marker([currentLat, currentLng], {icon: carIcon}).addTo(map)
+                .bindPopup(`<b>{{ voiture.marque }} {{ voiture.modele }}</b><br>{{ voiture.immatriculation }}`);
+        }
+        
+        // Mettre à jour les données
+        function fetchGPSData() {
+            const btn = document.getElementById('refresh-btn');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    icon.classList.remove('fa-spin');
+                    
+                    if (data.success && data.latitude && data.longitude) {
+                        currentLat = data.latitude;
+                        currentLng = data.longitude;
+                        
+                        // Mettre à jour l'UI
+                        document.getElementById('lat-val').textContent = currentLat.toFixed(6);
+                        document.getElementById('lng-val').textContent = currentLng.toFixed(6);
+                        
+                        if (data.derniere_mise_a_jour) {
+                            const date = new Date(data.derniere_mise_a_jour);
+                            document.getElementById('last-update').textContent = date.toLocaleString('fr-FR');
+                        } else {
+                            document.getElementById('last-update').textContent = 'À l\'instant';
+                        }
+                        
+                        const statusBadge = document.getElementById('tracker-status');
+                        statusBadge.className = 'status-badge status-active';
+                        statusBadge.innerHTML = '<i class="fas fa-signal me-1"></i> Signal GPS Actif';
+                        
+                        // Mettre à jour la carte
+                        const newLatLng = new L.LatLng(currentLat, currentLng);
+                        marker.setLatLng(newLatLng);
+                        map.flyTo(newLatLng, 15, {
+                            animate: true,
+                            duration: 1.5
+                        });
+                    } else {
+                        // Pas de coordonnées disponibles, on simule pour la démo si nécessaire ou on affiche un message
+                        const statusBadge = document.getElementById('tracker-status');
+                        statusBadge.className = 'status-badge status-inactive';
+                        statusBadge.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Signal perdu';
+                        
+                        document.getElementById('lat-val').textContent = "Non disponible";
+                        document.getElementById('lng-val').textContent = "Non disponible";
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    icon.classList.remove('fa-spin');
+                });
+        }
+        
+        // Init
+        initMap();
+        fetchGPSData();
+        
+        // Rafraîchissement manuel
+        document.getElementById('refresh-btn').addEventListener('click', fetchGPSData);
+        
+        // Rafraîchissement auto toutes les 30 secondes
+        setInterval(fetchGPSData, 30000);
+    });
+</script>
+{% endblock %}
