@@ -118,11 +118,12 @@
             <form id="reservationForm" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="voiture_id" value="{{ voiture.id }}">
+                
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label for="date_debut" class="form-label">
-                                <i class="fas fa-calendar-alt mr-2"></i>Date de début
+                                <i class="fas fa-calendar-alt mr-2 text-primary"></i>Date de début
                             </label>
                             <div class="date-input-wrapper">
                                 <input type="date" class="form-control" id="date_debut" name="date_debut" required>
@@ -132,7 +133,7 @@
                     <div class="col-md-6">
                         <div class="form-group mb-3">
                             <label for="date_fin" class="form-label">
-                                <i class="fas fa-calendar-alt mr-2"></i>Date de fin
+                                <i class="fas fa-calendar-alt mr-2 text-primary"></i>Date de fin
                             </label>
                             <div class="date-input-wrapper">
                                 <input type="date" class="form-control" id="date_fin" name="date_fin" required>
@@ -152,6 +153,27 @@
                             <small class="form-text text-muted">
                                 Votre numéro de téléphone pour la confirmation et la livraison
                             </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group mb-4">
+                            <label for="assurance" class="form-label fw-bold">
+                                <i class="fas fa-shield-alt mr-2 text-primary"></i>Choisir une agence d'assurance
+                            </label>
+                            <select class="form-select form-select-lg" id="assurance" name="assurance_id" required>
+                                <option value="" selected disabled>Sélectionnez votre assurance...</option>
+                                {% for assurance in assurances %}
+                                    <option value="{{ assurance.idAssurance }}">
+                                        {{ assurance.nomAssurance }} - {{ assurance.typeAssurance }} ({{ assurance.prix }} DH)
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <div class="form-text text-muted">
+                                <i class="fas fa-info-circle me-1"></i> La couverture d'assurance est obligatoire pour valider votre contrat.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -367,6 +389,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         const dateDebut = document.getElementById('date_debut');
         const dateFin = document.getElementById('date_fin');
+        const assuranceSelect = document.getElementById('assurance');
         const daysDisplay = document.getElementById('daysDisplay');
         const numberOfDays = document.getElementById('numberOfDays');
         const priceDisplay = document.getElementById('priceDisplay');
@@ -404,27 +427,39 @@
 
         // Formatage du numéro de carte (espaces tous les 4 chiffres)
         const cardNumber = document.getElementById('card_number');
-        cardNumber.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            value = value.replace(/(.{4})/g, '$1 ').trim();
-            e.target.value = value;
-        });
+        if (cardNumber) {
+            cardNumber.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(.{4})/g, '$1 ').trim();
+                e.target.value = value;
+            });
+        }
 
         // Formatage de la date d'expiration (MM/AA)
         const cardExpiry = document.getElementById('card_expiry');
-        cardExpiry.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length >= 2) {
-                value = value.substring(0, 2) + '/' + value.substring(2, 4);
-            }
-            e.target.value = value;
-        });
+        if (cardExpiry) {
+            cardExpiry.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.substring(0, 2) + '/' + value.substring(2, 4);
+                }
+                e.target.value = value;
+            });
+        }
 
         // Limiter le CVV à 3 chiffres
         const cardCvv = document.getElementById('card_cvv');
-        cardCvv.addEventListener('input', function(e) {
-            e.target.value = e.target.value.replace(/\D/g, '');
-        });
+        if (cardCvv) {
+            cardCvv.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+        }
+
+        // Parse assurance prices
+        const assurancePrices = {};
+        {% for assurance in assurances %}
+            assurancePrices['{{ assurance.idAssurance }}'] = parseFloat('{{ assurance.prix }}');
+        {% endfor %}
 
         function calculatePrice() {
             const debut = new Date(dateDebut.value);
@@ -443,8 +478,16 @@
                 const diffTime = Math.abs(fin - debut);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
+                let total = diffDays * prixParJour;
+                
+                // Add insurance price
+                const selectedAssuranceId = assuranceSelect.value;
+                if (selectedAssuranceId && assurancePrices[selectedAssuranceId]) {
+                    total += assurancePrices[selectedAssuranceId];
+                }
+
                 numberOfDays.textContent = diffDays;
-                totalPrice.textContent = (diffDays * prixParJour).toFixed(2);
+                totalPrice.textContent = total.toFixed(2);
                 
                 daysDisplay.style.display = 'block';
                 priceDisplay.style.display = 'block';
@@ -461,7 +504,7 @@
 
         async function checkAvailability(debut, fin) {
             try {
-                const response = await fetch(`/reservation/api/check-availability/${voitureId}/`, {
+                const response = await fetch('{% url "check-availability" voiture.id %}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -497,11 +540,13 @@
             errorMessage.textContent = message;
             errorAlert.style.display = 'block';
             successAlert.style.display = 'none';
+            window.scrollTo({ top: errorAlert.offsetTop - 100, behavior: 'smooth' });
         }
 
         function showSuccess() {
             successAlert.style.display = 'block';
             errorAlert.style.display = 'none';
+            window.scrollTo({ top: successAlert.offsetTop - 100, behavior: 'smooth' });
         }
 
         function getCookie(name) {
@@ -521,6 +566,7 @@
 
         dateDebut.addEventListener('change', calculatePrice);
         dateFin.addEventListener('change', calculatePrice);
+        assuranceSelect.addEventListener('change', calculatePrice);
 
         // Form submission
         document.getElementById('reservationForm').addEventListener('submit', async function(e) {
@@ -562,7 +608,7 @@
             const formData = new FormData(this);
             
             try {
-                const response = await fetch('/reservation/api/create-reservation/', {
+                const response = await fetch('{% url "create-reservation" %}', {
                     method: 'POST',
                     headers: {
                         'X-CSRFToken': getCookie('csrftoken')
@@ -576,7 +622,7 @@
                     showSuccess();
                     confirmBtn.disabled = true;
                     setTimeout(() => {
-                        window.location.href = '/mes-contrats/';
+                        window.location.href = '{% url "mes-contrats" %}';
                     }, 2000);
                 } else {
                     showError(data.message || 'Erreur lors de la réservation');

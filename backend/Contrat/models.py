@@ -3,6 +3,7 @@ from django.utils import timezone
 from Client.models import Client
 from Location.models import Location
 from Reservation.models import Reservation
+from Assurance.models import Assurance
 
 
 class Contrat(models.Model):
@@ -18,6 +19,7 @@ class Contrat(models.Model):
     location = models.OneToOneField(Location, on_delete=models.PROTECT, null=True, blank=True)
     reservation = models.OneToOneField(Reservation, on_delete=models.PROTECT, null=True, blank=True)
     client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    assurance = models.ForeignKey(Assurance, on_delete=models.SET_NULL, null=True, blank=True, related_name='contrats')
     date_signature = models.DateTimeField(auto_now_add=True)
     date_expiration = models.DateTimeField()
     conditions = models.TextField()
@@ -36,6 +38,7 @@ class Contrat(models.Model):
         """Retourne les détails du contrat."""
         return (f"Numéro: {self.numero_contrat}\n"
                 f"Client: {self.client}\n"
+                f"Assurance: {self.assurance}\n"
                 f"Location: {self.location}\n"
                 f"Date signature: {self.date_signature.strftime('%d/%m/%Y')}\n"
                 f"Date expiration: {self.date_expiration.strftime('%d/%m/%Y')}\n"

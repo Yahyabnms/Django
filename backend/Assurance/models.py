@@ -13,6 +13,7 @@ class Assurance(models.Model):
     prix = models.FloatField()
     dateDebut = models.DateField()
     dateFin = models.DateField()
+    logo = models.ImageField(upload_to='assurances/', null=True, blank=True)
     
     class Meta:
         verbose_name = "Assurance"

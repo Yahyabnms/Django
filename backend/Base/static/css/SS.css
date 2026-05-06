@@ -43,6 +43,146 @@ html {
   padding-right: 1rem;
 }
 
+.car-card-modern {
+  background: var(--white);
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(245, 158, 11, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-card-modern:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 40px rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.car-image-container {
+  position: relative;
+  overflow: hidden;
+  height: 240px;
+}
+
+.car-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.car-card-modern:hover .car-image {
+  transform: scale(1.1);
+}
+
+.car-overlay-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+  color: white;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.car-card-modern:hover .car-overlay-info {
+  transform: translateY(0);
+}
+
+.car-card-body {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.car-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--gray-900);
+}
+
+.price-tag-modern {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 800;
+  display: inline-block;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.feature-item-modern {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  background: #f8fafc;
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid #f1f5f9;
+}
+
+.feature-item-modern i {
+  color: var(--primary-color);
+  width: 16px;
+}
+
+/* Pagination stylée */
+.pagination-modern {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.pagination-modern .page-link {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% !important;
+  border: 1px solid var(--gray-300);
+  color: var(--gray-700);
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.pagination-modern .page-item.active .page-link {
+  background-color: #3b82f6; /* Bleu comme sur l'image */
+  border-color: #3b82f6;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.pagination-modern .page-link:hover:not(.active) {
+  background-color: #f8fafc;
+  border-color: #3b82f6;
+  color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.pagination-modern .page-item.disabled .page-link {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Page hero header (internal pages) */
 .page-hero {
   background: var(--gradient-hero);
@@ -122,27 +262,28 @@ html {
 
 /* Search card overlay */
 .search-section {
-  margin-top: -70px;
+  margin-top: -80px;
   position: relative;
-  z-index: 10;
+  z-index: 100; /* Augmenté pour être au-dessus de tout */
+  padding-bottom: 2rem;
 }
 
 .search-card {
   background: var(--white);
-  border-radius: 18px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-xl);
-  border: 1px solid rgba(245, 158, 11, 0.12);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .search-field label {
   display: block;
-  margin-bottom: 0.4rem;
-  font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.03em;
+  margin-bottom: 0.6rem;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--gray-700);
+  color: var(--primary-dark);
 }
 
 .search-field label i {
@@ -152,6 +293,17 @@ html {
 .search-card .form-select,
 .search-card .form-control {
   border-radius: 12px;
+  height: 54px; /* Un peu plus grand pour plus de confort */
+  border: 2px solid var(--gray-200);
+  background-color: #f8fafc; /* Fond légèrement grisé pour ressortir sur le blanc */
+  font-weight: 500;
+}
+
+.search-card .form-select:focus,
+.search-card .form-control:focus {
+  background-color: var(--white);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
 }
 
 .search-btn {
@@ -159,6 +311,54 @@ html {
   border-radius: 12px;
   font-weight: 800;
   letter-spacing: 0.02em;
+  height: 54px; /* Aligné avec les inputs */
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  transition: all 0.3s ease;
+}
+
+.search-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(245, 158, 11, 0.4);
+}
+
+/* Stats cards */
+.stat-card {
+  border-radius: 20px;
+  transition: all var(--transition-normal);
+  border: 1px solid transparent;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: rgba(245, 158, 11, 0.15);
+}
+
+.stat-card .card-title {
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+.stat-card i {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Process cards */
+.card-modern {
+  border-radius: 20px;
+  transition: all var(--transition-normal);
+}
+
+.card-modern:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+.card-modern i {
+  color: var(--primary-color) !important;
 }
 
 /* Featured cars */
@@ -216,6 +416,41 @@ html {
   background: rgba(245, 158, 11, 0.12);
   border-color: rgba(245, 158, 11, 0.24);
   color: var(--primary-dark);
+}
+
+/* Contact cards */
+.contact-card {
+  border-radius: 18px;
+  background: var(--white);
+  transition: all var(--transition-normal);
+  padding: 1.5rem;
+}
+
+.contact-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.contact-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--primary-color);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.contact-link {
+  color: var(--gray-700);
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.contact-link:hover {
+  color: var(--primary-color);
 }
 
 .reservation-card {

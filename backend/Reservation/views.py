@@ -12,6 +12,8 @@ from Contrat.models import Contrat
 from Client.models import Client
 from Voiture.models import Voiture
 from Location.models import Location
+from Assurance.models import Assurance
+from Paiement.models import Paiement
 from django.utils import timezone
 from datetime import datetime, timedelta
 import uuid
@@ -79,15 +81,18 @@ class ReserverVoitureView(View):
             return redirect_to_login(request.get_full_path())
         
         voiture = get_object_or_404(Voiture, id=voiture_id)
+        assurances = Assurance.objects.all()
         
         if voiture.statut != 'disponible':
             return render(request, 'reservation/reserver_voiture.html', {
                 'voiture': voiture,
+                'assurances': assurances,
                 'error': 'Cette voiture n\'est pas disponible'
             })
         
         return render(request, 'reservation/reserver_voiture.html', {
-            'voiture': voiture
+            'voiture': voiture,
+            'assurances': assurances
         })
 
 
@@ -176,10 +181,15 @@ def create_reservation(request):
             nombre_jours = (date_fin - date_debut).days
             prix_estime = nombre_jours * float(voiture.prix_par_jour)
             
+            # Récupérer l'assurance choisie
+            assurance_id = request.POST.get('assurance_id')
+            assurance_choisie = get_object_or_404(Assurance, idAssurance=assurance_id) if assurance_id else None
+            
             # Créer la réservation
             reservation = Reservation.objects.create(
                 client=client,
                 voiture=voiture,
+                assurance=assurance_choisie,
                 date_debut=date_debut,
                 date_fin=date_fin,
                 nombre_jours=nombre_jours,
@@ -197,36 +207,27 @@ def create_reservation(request):
                 statut='en_cours'
             )
             
-            # Créer l'assurance
-            from Assurance.models import Assurance
-            assurance = Assurance.objects.create(
-                nomAssurance=f"Assurance {voiture.marque} {voiture.modele}",
-                typeAssurance="Tous risques",
-                prix=prix_estime * 0.15,  # 15% du prix de location
-                dateDebut=date_debut.date(),
-                dateFin=date_fin.date()
-            )
-            
             # Créer le paiement
-            from Paiement.models import Paiement
             methode_paiement = request.POST.get('methode_paiement', 'carte')
+            montant_total = prix_estime + (assurance_choisie.prix if assurance_choisie else 0)
+            
             paiement = Paiement.objects.create(
                 client=client,
                 location=location,
-                montant=prix_estime + assurance.prix,  # Prix total avec assurance
+                montant=montant_total,
                 methode_paiement=methode_paiement,
                 statut='en_attente',
                 numero_transaction=f"TRANS-{reservation.id}-{timezone.now().strftime('%Y%m%d%H%M%S')}"
             )
             
             # Créer le contrat
-            from Contrat.models import Contrat
             contrat = Contrat.objects.create(
                 numero_contrat=f"CONTRAT-{uuid.uuid4().hex[:8].upper()}",
                 location=location,
                 client=client,
+                assurance=assurance_choisie,
                 date_expiration=date_fin,
-                conditions=f"Location de {voiture.marque} {voiture.modele} du {date_debut.strftime('%d/%m/%Y')} au {date_fin.strftime('%d/%m/%Y')}. Assurance incluse. Paiement: {paiement.montant} DH."
+                conditions=f"Location de {voiture.marque} {voiture.modele} du {date_debut.strftime('%d/%m/%Y')} au {date_fin.strftime('%d/%m/%Y')}. Assurance: {assurance_choisie.nomAssurance if assurance_choisie else 'N/A'}. Paiement total: {montant_total} DH."
             )
             
             return JsonResponse({
@@ -235,7 +236,7 @@ def create_reservation(request):
                 'message': 'Réservation créée avec succès. Contrat, assurance et paiement générés automatiquement.',
                 'details': {
                     'location_id': location.id,
-                    'assurance_id': assurance.idAssurance,
+                    'assurance_id': assurance_choisie.idAssurance if assurance_choisie else None,
                     'paiement_id': paiement.id,
                     'contrat_id': contrat.id,
                     'contrat_number': contrat.numero_contrat,

@@ -25,4 +25,9 @@ class Migration(migrations.Migration):
             name='longitude',
             field=models.FloatField(blank=True, help_text='Longitude actuelle', null=True),
         ),
+        migrations.AddField(
+            model_name='voiture',
+            name='image',
+            field=models.ImageField(blank=True, null=True, upload_to='voitures/'),
+        ),
     ]

@@ -16,7 +16,7 @@ from Location.models import Location
 
 class HomeView(View):
     def get(self, request):
-        voitures = Voiture.objects.filter(statut='disponible').order_by('-date_ajout')[:6]
+        voitures = Voiture.objects.all().order_by('-date_ajout')[:6]
         total_voitures = Voiture.objects.count()
         
         context = {

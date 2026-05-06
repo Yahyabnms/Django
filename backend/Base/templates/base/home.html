@@ -66,39 +66,21 @@
     <section class="container search-section" aria-label="Recherche">
         <form action="{% url 'liste-voitures' %}" method="GET" class="search-card">
             <div class="row g-3 align-items-end">
-                <div class="col-md-3 col-sm-6">
+                <div class="col-lg-5 col-md-4 col-6">
                     <div class="search-field">
-                        <label><i class="fas fa-map-marker-alt me-2"></i>Lieu de départ</label>
-                        <select name="lieu_depart" class="form-select">
-                            <option selected>Casablanca</option>
-                            <option>Marrakech</option>
-                            <option>Agadir</option>
-                            <option>Rabat</option>
-                            <option>Tanger</option>
-                        </select>
+                        <label class="form-label mb-1"><i class="fas fa-calendar-alt me-2 text-primary"></i>Date départ</label>
+                        <input name="date_depart" class="form-control" type="date" required />
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
+                <div class="col-lg-5 col-md-4 col-6">
                     <div class="search-field">
-                        <label><i class="fas fa-map-marker-alt me-2"></i>Lieu d'arrivée</label>
-                        <select name="lieu_arrivee" class="form-select">
-                            <option selected>Casablanca</option>
-                            <option>Marrakech</option>
-                            <option>Agadir</option>
-                            <option>Rabat</option>
-                            <option>Tanger</option>
-                        </select>
+                        <label class="form-label mb-1"><i class="fas fa-calendar-check me-2 text-primary"></i>Date retour</label>
+                        <input name="date_retour" class="form-control" type="date" required />
                     </div>
                 </div>
-                <div class="col-md-3 col-sm-6">
-                    <div class="search-field">
-                        <label><i class="fas fa-calendar me-2"></i>Date départ</label>
-                        <input name="date_depart" class="form-control" type="date" />
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6">
+                <div class="col-lg-2 col-md-4">
                     <button type="submit" class="btn btn-primary search-btn">
-                        <i class="fas fa-search me-2"></i>Rechercher
+                        <i class="fas fa-search me-2"></i>Chercher
                     </button>
                 </div>
             </div>
@@ -203,45 +185,72 @@
 
             <div class="row g-4">
                 {% for voiture in voitures|slice:":6" %}
-                    {% if voiture.statut == 'disponible' %}
                     <div class="col-md-6 col-lg-4">
                         <div class="car-card-modern">
-                            {% if voiture.image %}
-                                <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
-                            {% else %}
-                                <img src="https://images.unsplash.com/photo-1503376763036-066120622c74?w=400&h=250&fit=crop&q=80&auto=format" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
-                            {% endif %}
-                            <div class="p-4">
-                                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                                    <div>
-                                        <h5 class="fw-bold mb-1">{{ voiture.marque }} {{ voiture.modele }}</h5>
-                                        <span class="badge bg-warning text-dark mb-2">{{ voiture.categorie.nom|default:"Standard" }}</span>
+                            <div class="car-image-container">
+                                {% if voiture.image %}
+                                    <img src="{{ voiture.image.url }}" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1503376763036-066120622c74?w=400&h=250&fit=crop&q=80&auto=format" alt="{{ voiture.marque }} {{ voiture.modele }}" class="car-image">
+                                {% endif %}
+                                
+                                <span class="car-badge {% if voiture.statut == 'disponible' %}badge-available{% else %}badge-unavailable{% endif %}">
+                                    <i class="fas fa-circle me-1"></i>{{ voiture.get_statut_display }}
+                                </span>
+
+                                <div class="car-overlay-info">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <span>Disponible à {{ voiture.ville|default:"Casablanca" }}</span>
                                     </div>
-                                    <span class="badge bg-success">Disponible</span>
+                                </div>
+                            </div>
+                            
+                            <div class="car-card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h3 class="car-title mb-0">{{ voiture.marque }} {{ voiture.modele }}</h3>
+                                    <div class="price-tag-modern">
+                                        {{ voiture.prix_par_jour|floatformat:0 }} <small>DH</small>
+                                    </div>
                                 </div>
                                 
-                                <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <span class="feature-tag">
-                                        <i class="fas fa-calendar-alt me-1"></i>{{ voiture.annee }}
-                                    </span>
-                                    <span class="feature-tag">
-                                        <i class="fas fa-gas-pump me-1"></i>{{ voiture.categorie.type_carburant|default:"N/A" }}
-                                    </span>
-                                    <span class="feature-tag">
-                                        <i class="fas fa-cog me-1"></i>{{ voiture.categorie.transmission|default:"N/A" }}
-                                    </span>
+                                <div class="badge bg-soft-primary text-primary align-self-start mb-3">
+                                    {{ voiture.categorie.nom|default:"Standard" }}
                                 </div>
                                 
-                                <p class="text-muted small mb-3">
-                                    <i class="fas fa-tachometer-alt me-1"></i>{{ voiture.kilométrage|floatformat:0 }} km
-                                </p>
+                                <div class="feature-grid">
+                                    <div class="feature-item-modern">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span>{{ voiture.annee }}</span>
+                                    </div>
+                                    <div class="feature-item-modern">
+                                        <i class="fas fa-gas-pump"></i>
+                                        <span>{{ voiture.categorie.type_carburant|default:"N/A"|truncatechars:10 }}</span>
+                                    </div>
+                                    <div class="feature-item-modern">
+                                        <i class="fas fa-cog"></i>
+                                        <span>{{ voiture.categorie.transmission|default:"N/A" }}</span>
+                                    </div>
+                                    <div class="feature-item-modern">
+                                        <i class="fas fa-tachometer-alt"></i>
+                                        <span>{{ voiture.kilométrage|floatformat:0 }} km</span>
+                                    </div>
+                                </div>
                                 
-                                <div class="car-price h5 mb-3"><i class="fas fa-tag me-2 text-primary"></i>{{ voiture.prix_par_jour }} DH <small class="text-muted fs-6 fw-normal">/ jour</small></div>
-                                <a class="btn btn-primary w-100" href="{% url 'reserver-voiture' voiture.id %}"><i class="fas fa-calendar-check me-2"></i>Louer maintenant</a>
+                                <div class="mt-auto">
+                                    {% if voiture.statut == 'disponible' %}
+                                        <a class="btn btn-primary w-100 py-3 fw-bold" href="{% url 'reserver-voiture' voiture.id %}">
+                                            <i class="fas fa-calendar-check me-2"></i>Louer maintenant
+                                        </a>
+                                    {% else %}
+                                        <button class="btn btn-soft w-100 py-3 fw-bold" disabled>
+                                            <i class="fas fa-ban me-2"></i>Indisponible
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    {% endif %}
                 {% empty %}
                     <div class="col-12">
                         <div class="alert alert-info text-center mb-0">

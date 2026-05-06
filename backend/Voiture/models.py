@@ -40,6 +40,7 @@ class Voiture(models.Model):
     prix_par_jour = models.DecimalField(max_digits=10, decimal_places=2)
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='disponible')
     kilométrage = models.IntegerField(default=0)
+    ville = models.CharField(max_length=100, default='Casablanca')
     image = models.ImageField(upload_to='voitures/', null=True, blank=True)
     
     # Champs pour le suivi GPS

@@ -201,8 +201,12 @@ class Command(BaseCommand):
                 immatriculation=f"WND-{random.randint(1000, 9999)}-{random.randint(10, 99)}",
                 annee=random.randint(2019, 2024),
                 prix_par_jour=Decimal(random.randint(250, 800)),
-                statut=random.choice(['disponible', 'disponible', 'disponible', 'louee']),  # 75% disponibles
-                kilométrage=random.randint(5000, 150000)
+                statut='disponible',  # Toujours disponible comme demandé
+                kilométrage=random.randint(5000, 150000),
+                # Ajouter des coordonnées GPS (autour de Casablanca, Maroc)
+                latitude=random.uniform(33.5, 33.6),
+                longitude=random.uniform(-7.65, -7.5),
+                derniere_mise_a_jour_gps=timezone.now()
             )
             voitures.append(voiture)
             self.stdout.write(f"  ✓ {voiture.marque} {voiture.modele} - {voiture.immatriculation}")

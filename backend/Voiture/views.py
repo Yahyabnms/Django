@@ -16,7 +16,47 @@ class ListeVoituresView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        return Voiture.objects.filter(statut='disponible').select_related('categorie').order_by('marque', 'modele')
+        queryset = Voiture.objects.filter(statut='disponible').select_related('categorie')
+        
+        # Filtre par lieu (ville)
+        lieu_depart = self.request.GET.get('lieu_depart')
+        if lieu_depart:
+            queryset = queryset.filter(ville=lieu_depart)
+            
+        # Filtre par dates de disponibilité
+        date_debut_str = self.request.GET.get('date_depart')
+        date_fin_str = self.request.GET.get('date_retour')
+        
+        if date_debut_str and date_fin_str:
+            try:
+                from Location.models import Location
+                from Reservation.models import Reservation
+                from django.db.models import Q
+                
+                date_debut = datetime.strptime(date_debut_str, '%Y-%m-%d')
+                date_fin = datetime.strptime(date_fin_str, '%Y-%m-%d')
+                
+                # Trouver les IDs des voitures occupées pendant cette période
+                voitures_occupees_loc = Location.objects.filter(
+                    statut='en_cours'
+                ).filter(
+                    Q(date_debut__lte=date_fin) & Q(date_fin__gte=date_debut)
+                ).values_list('voiture_id', flat=True)
+                
+                voitures_occupees_res = Reservation.objects.filter(
+                    statut__in=['confirmee', 'activee']
+                ).filter(
+                    Q(date_debut__lte=date_fin) & Q(date_fin__gte=date_debut)
+                ).values_list('voiture_id', flat=True)
+                
+                # Exclure ces voitures du queryset
+                queryset = queryset.exclude(id__in=voitures_occupees_loc).exclude(id__in=voitures_occupees_res)
+                
+            except (ValueError, TypeError):
+                # En cas de format de date invalide, on ignore le filtre
+                pass
+            
+        return queryset.order_by('marque', 'modele')
 
 
 class VerifierDisponibiliteView(View):
@@ -104,8 +144,6 @@ class APIGPSVoiture(UserPassesTestMixin, View):
         try:
             voiture = Voiture.objects.get(id=voiture_id)
             
-            # Si la voiture n'a pas de coordonnées, on peut simuler ou renvoyer null
-            # Dans un cas réel, ces données viendraient d'un tracker IoT
             return JsonResponse({
                 'success': True,
                 'latitude': voiture.latitude,
@@ -117,3 +155,45 @@ class APIGPSVoiture(UserPassesTestMixin, View):
                 'success': False,
                 'error': 'Voiture non trouvée'
             }, status=404)
+
+class DashboardGPSView(UserPassesTestMixin, View):
+    """Affiche une carte avec toutes les voitures suivies"""
+    
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return redirect('login')
+        return HttpResponseForbidden("<h1>403 Interdit</h1><p>Seuls les administrateurs peuvent accéder au dashboard GPS.</p>")
+
+    def get(self, request):
+        voitures = Voiture.objects.exclude(latitude__isnull=True).exclude(longitude__isnull=True)
+        return render(request, 'voiture/dashboard_gps.html', {
+            'voitures': voitures
+        })
+
+class APIAllCarsGPS(UserPassesTestMixin, View):
+    """API pour récupérer les coordonnées GPS de toutes les voitures"""
+    
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    def handle_no_permission(self):
+        return JsonResponse({'success': False, 'error': 'Accès non autorisé.'}, status=403)
+
+    def get(self, request):
+        voitures = Voiture.objects.exclude(latitude__isnull=True).exclude(longitude__isnull=True)
+        data = []
+        for v in voitures:
+            data.append({
+                'id': v.id,
+                'marque': v.marque,
+                'modele': v.modele,
+                'immatriculation': v.immatriculation,
+                'latitude': v.latitude,
+                'longitude': v.longitude,
+                'statut': v.statut,
+                'derniere_mise_a_jour': v.derniere_mise_a_jour_gps.isoformat() if v.derniere_mise_a_jour_gps else None
+            })
+        return JsonResponse({'success': True, 'voitures': data})

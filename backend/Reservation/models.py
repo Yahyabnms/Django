@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from Client.models import Client
 from Voiture.models import Voiture
+from Assurance.models import Assurance
 
 
 class Reservation(models.Model):
@@ -16,8 +17,11 @@ class Reservation(models.Model):
     
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     voiture = models.ForeignKey(Voiture, on_delete=models.PROTECT)
+    assurance = models.ForeignKey(Assurance, on_delete=models.SET_NULL, null=True, blank=True)
     date_debut = models.DateTimeField()
     date_fin = models.DateTimeField()
+    lieu_depart = models.CharField(max_length=100, default='Casablanca')
+    lieu_arrivee = models.CharField(max_length=100, default='Casablanca')
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en_attente')
     nombre_jours = models.IntegerField()
     prix_estime = models.DecimalField(max_digits=10, decimal_places=2)

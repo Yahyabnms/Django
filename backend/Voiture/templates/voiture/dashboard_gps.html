@@ -1,0 +1,243 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard GPS - Suivi de la Flotte{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<style>
+    #map {
+        height: 700px;
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 1;
+    }
+    .gps-header {
+        background: var(--gradient-primary);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 0 0 20px 20px;
+    }
+    .car-list-panel {
+        max-height: 700px;
+        overflow-y: auto;
+        background: white;
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .car-item {
+        padding: 0.75rem;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .car-item:hover {
+        background: #f8f9fa;
+    }
+    .car-item.active {
+        background: #e7f1ff;
+        border-left: 4px solid #0d6efd;
+    }
+    .status-dot {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .dot-disponible { background-color: #198754; }
+    .dot-louee { background-color: #0dcaf0; }
+    .dot-maintenance { background-color: #ffc107; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gps-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div>
+                <h1 class="h2 mb-1 fw-bold"><i class="fas fa-satellite me-2"></i>Dashboard GPS Flotte</h1>
+                <p class="mb-0 text-white-50">Suivi en temps réel de tous les véhicules équipés</p>
+            </div>
+            <div>
+                <button id="refresh-all-btn" class="btn btn-light">
+                    <i class="fas fa-sync-alt me-2"></i>Rafraîchir tout
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-4 mb-5">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="car-list-panel">
+                <h5 class="fw-bold mb-3 px-2">Véhicules (<span id="car-count">0</span>)</h5>
+                <div class="input-group mb-3 px-2">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" id="car-search" class="form-control border-start-0" placeholder="Rechercher...">
+                </div>
+                <div id="car-list">
+                    <!-- Les voitures seront injectées ici par JS -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <div id="map"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const apiUrl = "{% url 'api-all-cars-gps' %}";
+        let map;
+        let markers = {};
+        let carsData = [];
+        
+        // Icône personnalisée pour la voiture
+        const createCarIcon = (status) => {
+            let color = 'blue';
+            if (status === 'disponible') color = 'green';
+            if (status === 'maintenance') color = 'orange';
+            
+            return L.icon({
+                iconUrl: `https://cdn-icons-png.flaticon.com/512/3204/3204005.png`, 
+                iconSize: [32, 32],
+                iconAnchor: [16, 16],
+                popupAnchor: [0, -16]
+            });
+        };
+        
+        // Initialiser la carte
+        function initMap() {
+            map = L.map('map').setView([33.5731, -7.5898], 6);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+        }
+        
+        // Mettre à jour les données
+        function fetchAllGPSData() {
+            const btn = document.getElementById('refresh-all-btn');
+            const icon = btn.querySelector('i');
+            icon.classList.add('fa-spin');
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    icon.classList.remove('fa-spin');
+                    
+                    if (data.success) {
+                        carsData = data.voitures;
+                        updateUI();
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    icon.classList.remove('fa-spin');
+                });
+        }
+        
+        function updateUI() {
+            const listContainer = document.getElementById('car-list');
+            const carCount = document.getElementById('car-count');
+            const searchTerm = document.getElementById('car-search').value.toLowerCase();
+            
+            listContainer.innerHTML = '';
+            carCount.textContent = carsData.length;
+            
+            const bounds = L.latLngBounds();
+            let hasVisibleMarkers = false;
+            
+            carsData.forEach(car => {
+                if (car.marque.toLowerCase().includes(searchTerm) || 
+                    car.modele.toLowerCase().includes(searchTerm) || 
+                    car.immatriculation.toLowerCase().includes(searchTerm)) {
+                    
+                    // Créer l'élément de liste
+                    const item = document.createElement('div');
+                    item.className = 'car-item';
+                    item.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>${car.marque} ${car.modele}</strong>
+                            <span class="badge bg-light text-dark small">${car.immatriculation}</span>
+                        </div>
+                        <div class="small text-muted mt-1">
+                            <span class="status-dot dot-${car.statut}"></span> ${car.statut}
+                        </div>
+                    `;
+                    
+                    item.addEventListener('click', () => {
+                        const marker = markers[car.id];
+                        if (marker) {
+                            map.flyTo(marker.getLatLng(), 16);
+                            marker.openPopup();
+                            
+                            // Highlight in list
+                            document.querySelectorAll('.car-item').forEach(el => el.classList.remove('active'));
+                            item.classList.add('active');
+                        }
+                    });
+                    
+                    listContainer.appendChild(item);
+                    
+                    // Mettre à jour ou créer le marker
+                    const latLng = [car.latitude, car.longitude];
+                    bounds.extend(latLng);
+                    hasVisibleMarkers = true;
+                    
+                    if (markers[car.id]) {
+                        markers[car.id].setLatLng(latLng);
+                    } else {
+                        const marker = L.marker(latLng, {icon: createCarIcon(car.statut)})
+                            .addTo(map)
+                            .bindPopup(`
+                                <strong>${car.marque} ${car.modele}</strong><br>
+                                ${car.immatriculation}<br>
+                                <span class="badge bg-info">${car.statut}</span><br>
+                                <hr class="my-1">
+                                <small>Dernière maj: ${new Date(car.derniere_mise_a_jour).toLocaleString('fr-FR')}</small><br>
+                                <a href="/voiture/${car.id}/suivi-gps/" class="btn btn-sm btn-primary mt-2 text-white">Détails</a>
+                            `);
+                        markers[car.id] = marker;
+                    }
+                }
+            });
+            
+            if (hasVisibleMarkers && Object.keys(markers).length > 0 && map.getZoom() < 10) {
+                map.fitBounds(bounds, {padding: [50, 50]});
+            }
+        }
+        
+        // Recherche
+        document.getElementById('car-search').addEventListener('input', updateUI);
+        
+        // Init
+        initMap();
+        fetchAllGPSData();
+        
+        // Rafraîchissement manuel
+        document.getElementById('refresh-all-btn').addEventListener('click', fetchAllGPSData);
+        
+        // Rafraîchissement auto toutes les 60 secondes
+        setInterval(fetchAllGPSData, 60000);
+    });
+</script>
+{% endblock %}

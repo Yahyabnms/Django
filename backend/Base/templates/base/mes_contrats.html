@@ -70,6 +70,30 @@
                                 <p class="mb-1">
                                     <strong>Expire le:</strong> {{ contrat.date_expiration|date:"d/m/Y" }}
                                 </p>
+                                {% if contrat.assurance %}
+                                <p class="mb-1">
+                                    <strong>Assurance:</strong> <span class="badge bg-soft-info text-info"><i class="fas fa-shield-alt me-1"></i>{{ contrat.assurance.nomAssurance }} ({{ contrat.assurance.typeAssurance }})</span>
+                                </p>
+                                <div class="mt-3 p-3 border rounded bg-light">
+                                    <p class="small mb-2 text-muted text-uppercase fw-bold">Signature Assurance Maroc</p>
+                                    <div class="d-flex justify-content-between align-items-end">
+                                        <div class="d-flex align-items-center">
+                                            {% if contrat.assurance.logo %}
+                                                <img src="{{ contrat.assurance.logo.url }}" alt="Logo {{ contrat.assurance.nomAssurance }}" class="me-3 rounded shadow-sm" style="height: 50px; width: 50px; object-fit: contain; background: white; padding: 5px;">
+                                            {% endif %}
+                                            <div>
+                                                <p class="mb-0 fw-bold" style="font-family: 'Courier New', Courier, monospace; font-size: 1.2rem; color: #1e40af;">
+                                                    {{ contrat.assurance.nomAssurance }}
+                                                </p>
+                                                <p class="small text-muted mb-0">Certifié conforme par Assurance Maroc</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <img src="https://cdn-icons-png.flaticon.com/512/1048/1048953.png" alt="Sceau" style="height: 50px; opacity: 0.6;">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
                                 <p class="mb-0">
                                     <strong>Conditions:</strong>
                                 </p>
